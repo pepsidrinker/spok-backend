@@ -1,0 +1,55 @@
+#pragma once
+
+#include <memory>
+#include <vector>
+#include <map>
+#include <iostream>
+
+#include "ClState.hpp"
+#include "ClStateChain.hpp"
+#include "ClOperator.hpp"
+
+class ClCausalInferer
+{
+    protected:
+        std::size_t m_number_of_variables_per_state;
+        STATE_CHAIN_POINTER m_state_chain;
+
+        /*
+        *    Each element represent the effect [OPERATOR_POINTER] has on all the variables of a state
+        */
+        std::map<OPERATOR_POINTER, std::vector<int> > m_operator_to_state_variables_correlation;
+
+    public:
+    ClCausalInferer();
+    ~ClCausalInferer();
+    static int Create(std::size_t p_number_of_variables_per_state, std::shared_ptr<ClCausalInferer>& po_new_causal_inferer);
+
+    /*
+    *   Association: 
+    *       This step involves identifying statistical associations or correlations between variables.
+    *       It focuses on understanding how changes in one variable are related to changes in another variable, without implying causation.    
+    */
+    int RunAssociationStep(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_executed_operators);
+
+
+    /*
+    *   Intervention: 
+    *       The intervention step goes beyond observational associations and focuses on the effects of deliberate interventions or actions. 
+    *       It considers how changing one variable (the cause) influences another variable (the effect) when the cause is intentionally manipulated.
+    */
+    //int Intervention(STATE_POINTER p_current_state);
+
+    
+    /*
+    *    Counterfactuals: 
+    *        Counterfactuals are hypothetical scenarios that compare what actually happened to what would have happened if certain conditions were different. 
+    *        This step delves into the concept of "what if" scenarios to assess the causal impact of an intervention or action.
+    */
+    //int Counterfactuals(STATE_POINTER p_current_state);
+
+
+
+};
+
+typedef std::shared_ptr<ClCausalInferer> CAUSAL_INFERER_POINTER;

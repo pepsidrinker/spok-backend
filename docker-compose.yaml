@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  spok_backend:
+    image: nvidia/cuda:12.2.0-devel-ubuntu22.04
+    container_name: spok_backend
+    runtime: nvidia
+    network_mode: host
+    tty: true
+    stdin_open: true
+    #command: /bin/bash
+    volumes:
+      - /mnt/linux_data/Projects/gps2:/workspace

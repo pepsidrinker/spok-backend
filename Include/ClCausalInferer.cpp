@@ -1,0 +1,86 @@
+#include "ClCausalInferer.hpp"
+
+ClCausalInferer::ClCausalInferer()
+{
+}
+
+ClCausalInferer::~ClCausalInferer()
+{
+}
+
+int ClCausalInferer::Create(std::size_t p_number_of_variables_per_state, std::shared_ptr<ClCausalInferer>& po_new_causal_inferer)
+{
+    if(p_number_of_variables_per_state == 0)
+    {
+        return -1;
+    }
+
+    auto new_instance = std::make_shared<ClCausalInferer>();
+    new_instance->m_number_of_variables_per_state = p_number_of_variables_per_state;
+    
+    po_new_causal_inferer = new_instance;
+
+    return 1;
+}
+
+int ClCausalInferer::RunAssociationStep(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_executed_operators)
+{
+    if(this->m_state_chain == nullptr)
+    {
+        return -1;
+    }
+
+    this->m_state_chain->m_states.push_back(p_current_state);
+
+    if(this->m_state_chain->m_states.size() == 1)
+    {
+        return 1;
+    }
+
+    STATE_POINTER previous_state = this->m_state_chain->m_states[this->m_state_chain->m_states.size()-2];
+    STATE_POINTER current_state = this->m_state_chain->m_states[this->m_state_chain->m_states.size()-1];
+
+    if(previous_state->m_state_variables.size() != current_state->m_state_variables.size())
+    {
+        return -2;
+    }
+
+    if(current_state->m_state_variables.size() != this->m_number_of_variables_per_state)
+    {
+        return -3;
+    }
+
+    /*
+    *    Update our correlation matrix
+    */
+    for(std::size_t operator_index = 0; operator_index < p_executed_operators.size(); operator_index++)
+    {
+        OPERATOR_POINTER& current_operator = p_executed_operators[operator_index];
+
+        /*
+        *    Make sure the matrix exists, if not, create it
+        */    
+        if (this->m_operator_to_state_variables_correlation.find(current_operator) == this->m_operator_to_state_variables_correlation.end()) 
+        {
+            this->m_operator_to_state_variables_correlation[current_operator] = std::vector<int>(this->m_number_of_variables_per_state,0);
+        }       
+
+        std::vector<int>& current_operator_to_state_variables_correlation = this->m_operator_to_state_variables_correlation[current_operator];
+
+        /*
+        *    If a variable has changed between the 2 timesteps using this operator, we increase it's correlation between it and the operator
+        */
+        for(std::size_t state_variable_index=0; state_variable_index < current_state->m_state_variables.size(); state_variable_index++)
+        {
+            if(previous_state->m_state_variables[state_variable_index] != current_state->m_state_variables[state_variable_index])
+            {
+                if(current_operator_to_state_variables_correlation[state_variable_index] < 9999)
+                {
+                    current_operator_to_state_variables_correlation[state_variable_index]++;
+                }
+            }          
+        }
+    }
+
+    return -1;
+}
