@@ -10,4 +10,4 @@ services:
     stdin_open: true
     #command: /bin/bash
     volumes:
-      - /mnt/linux_data/Projects/gps2:/workspace
+      - /mnt/linux_data/Projects/spok_backend:/workspace
