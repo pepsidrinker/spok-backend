@@ -56,14 +56,22 @@ int main()
 
         for(std::size_t variable_index = 0; variable_index < g_number_of_variables_per_state; variable_index++)
         {
-            std::cout << "Please input the value of variable [" << variable_index << "]" << std::endl;
+            std::cout << "Please input the [x,y] values of variable [" << variable_index << "]" << std::endl;
             std::string user_input;
             std::cin >> user_input;
             std::stringstream ss;
-            int integer_user_input = 0;
-            ss >> integer_user_input;
+            float float_user_input = 0;
+            ss >> float_user_input;
 
-            new_timestep_state->m_state_variables[variable_index] = integer_user_input;
+            new_timestep_state->m_state_variables[variable_index].m_x = float_user_input;
+
+
+            std::cin >> user_input;
+            ss.str("");
+            float_user_input = 0;
+            ss >> float_user_input;
+
+            new_timestep_state->m_state_variables[variable_index].m_y = float_user_input;
         }
 
         std::cout << "State for timestep [" << g_current_timestep << "]" << std::endl;
