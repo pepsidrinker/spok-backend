@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "ClState.hpp"
+#include "ClStateTransition.hpp"
 
 /*
     A state chain represent a sequence of states through time.
@@ -15,6 +16,7 @@ class ClStateChain
 {
     public:
         std::vector<STATE_POINTER> m_states;
+        std::vector<STATE_TRANSITION_POINTER> m_states_transitions;
         
         static int Create(std::shared_ptr<ClStateChain>& po_new_state_chain);
         void Print();
