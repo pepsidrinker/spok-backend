@@ -25,20 +25,20 @@ int ClCausalInferer::Create(std::size_t p_number_of_variables_per_state, std::sh
 
 int ClCausalInferer::RunAssociationStep(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_executed_operators)
 {
-    if(this->m_state_chain == nullptr)
+    if(this->m_logic_flow == nullptr)
     {
         return -1;
     }
 
-    this->m_state_chain->m_states.push_back(p_current_state);
+    this->m_logic_flow->m_states.push_back(p_current_state);
 
-    if(this->m_state_chain->m_states.size() == 1)
+    if(this->m_logic_flow->m_states.size() == 1)
     {
         return 1;
     }
 
-    STATE_POINTER previous_state = this->m_state_chain->m_states[this->m_state_chain->m_states.size()-2];
-    STATE_POINTER current_state = this->m_state_chain->m_states[this->m_state_chain->m_states.size()-1];
+    STATE_POINTER previous_state = this->m_logic_flow->m_states[this->m_logic_flow->m_states.size()-2];
+    STATE_POINTER current_state = this->m_logic_flow->m_states[this->m_logic_flow->m_states.size()-1];
 
     if(previous_state->m_state_variables.size() != current_state->m_state_variables.size())
     {

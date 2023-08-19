@@ -6,14 +6,14 @@
 #include <iostream>
 
 #include "ClState.hpp"
-#include "ClStateChain.hpp"
+#include "ClLogicFlow.hpp"
 #include "ClOperator.hpp"
 
 class ClCausalInferer
 {
     protected:
         std::size_t m_number_of_variables_per_state;
-        STATE_CHAIN_POINTER m_state_chain;
+        LOGIC_FLOW_POINTER m_logic_flow;
 
         /*
         *    Each element represent the effect [OPERATOR_POINTER] has on all the variables of a state
