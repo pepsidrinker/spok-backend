@@ -49,8 +49,57 @@ int ClLogicFlow::AddState(std::shared_ptr<ClState> p_state)
     }
 
     new_block.m_transition = new_state_transition;
+
+
+
+    result = this->PredictNextState(new_block.m_state, new_block.m_transition, new_block.m_predictive_next_state);
+    if(result != 1)
+    {
+        return -5;
+    }
+
+
     this->m_blocks.push_back(new_block);
     
+    return 1;
+}
+
+int ClLogicFlow::PredictNextStateVariable(const ClState::POSITION& p_initial_position, const ClStateTransition::MOVEMENT& p_movement, const std::size_t p_number_of_timestep_in_the_future, ClState::POSITION& po_predicted_position)
+{
+    ClState::POSITION new_position;
+
+    // Calculate new position components
+    new_position.m_x = p_initial_position.m_x + (p_movement.m_velocity_direction_x * p_number_of_timestep_in_the_future) +(0.5 * p_movement.m_accelration_direction_x * p_number_of_timestep_in_the_future * p_number_of_timestep_in_the_future);
+    new_position.m_y = p_initial_position.m_y + (p_movement.m_velocity_direction_y * p_number_of_timestep_in_the_future) +(0.5 * p_movement.m_accelration_direction_y * p_number_of_timestep_in_the_future * p_number_of_timestep_in_the_future);
+    po_predicted_position =  new_position;
+
+    return 1;
+}
+
+int ClLogicFlow::PredictNextState(STATE_POINTER p_state, STATE_TRANSITION_POINTER p_state_transition, STATE_POINTER& po_new_predictive_state)
+{
+    if(p_state == nullptr || p_state_transition == nullptr)
+    {
+        return -1;
+    }
+
+    STATE_POINTER new_state = nullptr;
+    int result = ClState::Create(p_state->m_state_variables.size(), new_state);
+    if(result != 1)
+    {
+        return -2;
+    }
+
+    for(std::size_t i=0; i<p_state->m_state_variables.size(); i++)
+    {
+        result = PredictNextStateVariable(p_state->m_state_variables[i],p_state_transition->m_state_variables_transitions[i],1,new_state->m_state_variables[i]);
+        if(result != 1)
+        {
+            return -3;
+        }
+    }
+
+    po_new_predictive_state = new_state;
     return 1;
 }
 
@@ -68,7 +117,12 @@ void ClLogicFlow::Print()
         if(this->m_blocks[i].m_transition != nullptr)
         {
             this->m_blocks[i].m_transition->Print();
-        }                
+        }    
+
+        if(this->m_blocks[i].m_predictive_next_state != nullptr)
+        {
+            this->m_blocks[i].m_predictive_next_state->Print();
+        }              
     }
     std::cout << std::endl << "==== End of logic flow ====" << std::endl;
 }

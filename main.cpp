@@ -75,9 +75,16 @@ int main()
         new_timestep_state->m_state_variables[0] = state_variable;
 
         g_states_chain->AddState(new_timestep_state);
+        ClState::POSITION predicted_position;
+        if(g_states_chain->m_blocks.back().m_predictive_next_state != nullptr)
+        {
+            predicted_position = g_states_chain->m_blocks.back().m_predictive_next_state->m_state_variables[0];
+        }
 
-        std::cout << "Latest block of global state chain for timestep [" << g_current_timestep << "]" << std::endl;
-        g_states_chain->Print();
+        std::cout << "Current position [" << state_variable.m_x << ", " << state_variable.m_y << "],  predicted next position [" << predicted_position.m_x << ", " << predicted_position.m_y << "]" << std::endl;
+
+        // std::cout << "Latest block of global state chain for timestep [" << g_current_timestep << "]" << std::endl;
+        // g_states_chain->Print();
         std::cout << "Press any key to keep running" << std::endl;
         std::cout << "==================================================" << std::endl;
 
