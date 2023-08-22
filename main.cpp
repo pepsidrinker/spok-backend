@@ -25,9 +25,16 @@ float GetVariableNextTimestep()
 {
     static float last_position = 0.00;
     
-    last_position++;
+    float added_value = 2.0;
 
-    if(last_position >= 4)
+    if(last_position >= 10)
+    {
+        added_value=1;
+    }
+
+    last_position += added_value;
+
+    if(last_position >= 20)
     {
         last_position = 0;
     }
@@ -69,19 +76,18 @@ int main()
             return -3;            
         }
 
-        ClState::POSITION state_variable;
-        state_variable.m_x = GetVariableNextTimestep();
-        state_variable.m_y = 0.00;
+        float state_variable;
+        state_variable = GetVariableNextTimestep();
         new_timestep_state->m_state_variables[0] = state_variable;
 
         g_states_chain->AddState(new_timestep_state);
-        ClState::POSITION predicted_position;
+        float predicted_position;
         if(g_states_chain->m_blocks.back().m_predictive_next_state != nullptr)
         {
             predicted_position = g_states_chain->m_blocks.back().m_predictive_next_state->m_state_variables[0];
         }
 
-        std::cout << "Current position [" << state_variable.m_x << ", " << state_variable.m_y << "],  predicted next position [" << predicted_position.m_x << ", " << predicted_position.m_y << "]" << std::endl;
+        std::cout << "Current position [" << state_variable << "],  predicted next position [" << predicted_position << "]" << std::endl;
 
         // std::cout << "Latest block of global state chain for timestep [" << g_current_timestep << "]" << std::endl;
         // g_states_chain->Print();

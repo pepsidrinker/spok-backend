@@ -29,7 +29,7 @@ class ClLogicFlow
     };
 
     private:
-        static int PredictNextStateVariable(const ClState::POSITION& p_initial_position, const ClStateTransition::MOVEMENT& p_movement, std::size_t p_number_of_timestep_in_the_future, ClState::POSITION& po_predicted_position);
+        static int PredictNextStateVariable(float p_variable_current_value, ClStateTransition::MOVEMENT& p_movement, std::size_t p_number_of_timestep_in_the_future, float& po_variable_predicted_value);
         int PredictNextState(STATE_POINTER p_state, STATE_TRANSITION_POINTER p_state_transition, STATE_POINTER& po_new_predictive_state);
 
     public:

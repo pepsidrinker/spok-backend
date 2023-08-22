@@ -64,14 +64,12 @@ int ClLogicFlow::AddState(std::shared_ptr<ClState> p_state)
     return 1;
 }
 
-int ClLogicFlow::PredictNextStateVariable(const ClState::POSITION& p_initial_position, const ClStateTransition::MOVEMENT& p_movement, const std::size_t p_number_of_timestep_in_the_future, ClState::POSITION& po_predicted_position)
+int ClLogicFlow::PredictNextStateVariable(float p_variable_current_value, ClStateTransition::MOVEMENT& p_movement, std::size_t p_number_of_timestep_in_the_future, float& po_variable_predicted_value)
 {
-    ClState::POSITION new_position;
+    float predicted_value = 0.00;
 
-    // Calculate new position components
-    new_position.m_x = p_initial_position.m_x + (p_movement.m_velocity_direction_x * p_number_of_timestep_in_the_future) +(0.5 * p_movement.m_accelration_direction_x * p_number_of_timestep_in_the_future * p_number_of_timestep_in_the_future);
-    new_position.m_y = p_initial_position.m_y + (p_movement.m_velocity_direction_y * p_number_of_timestep_in_the_future) +(0.5 * p_movement.m_accelration_direction_y * p_number_of_timestep_in_the_future * p_number_of_timestep_in_the_future);
-    po_predicted_position =  new_position;
+    predicted_value = p_variable_current_value + (p_movement.m_velocity * p_number_of_timestep_in_the_future) + (0.5 * p_movement.m_acceleration * p_number_of_timestep_in_the_future * p_number_of_timestep_in_the_future);
+    po_variable_predicted_value = predicted_value;
 
     return 1;
 }

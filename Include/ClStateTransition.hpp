@@ -23,9 +23,7 @@ class ClStateTransition
         *    Velocity is what tells you not only how fast an object is moving but also in which direction it is moving. 
         *    For example, a car traveling at 60 miles per hour to the north has a velocity of 60 mph in the north direction.
         */
-        float m_velocity_speed;
-        float m_velocity_direction_x;
-        float m_velocity_direction_y;
+        float m_velocity;
 
         /*
         *    Acceleration:
@@ -42,28 +40,17 @@ class ClStateTransition
         *    In summary, velocity focuses on an object's speed and direction of motion, while acceleration focuses on changes in an object's velocity. 
         *    Both velocity and acceleration are vector quantities, meaning they have both numerical values and directions.
         */
-        float m_acceleration_speed;
-        float m_accelration_direction_x;
-        float m_accelration_direction_y;
+        float m_acceleration;
 
         MOVEMENT()
         {
-            this->m_velocity_speed = 0.00;
-            this->m_velocity_direction_x = 0.00;
-            this->m_velocity_direction_y = 0.00;
-            this->m_acceleration_speed = 0.00;
-            this->m_accelration_direction_x = 0.00;
-            this->m_accelration_direction_y = 0.00;
+            this->m_velocity = 0.00;
+            this->m_acceleration = 0.00;
         };
 
         bool operator==(const MOVEMENT& p_other) const
         {
-            return (m_velocity_speed == p_other.m_velocity_speed) &&
-                (m_velocity_direction_x == p_other.m_velocity_direction_x) &&
-                (m_velocity_direction_y == p_other.m_velocity_direction_y) &&
-                (m_acceleration_speed == p_other.m_acceleration_speed) &&
-                (m_accelration_direction_x == p_other.m_accelration_direction_x) &&
-                (m_accelration_direction_y == p_other.m_accelration_direction_y);
+            return (this->m_velocity == p_other.m_velocity) && (this->m_acceleration == p_other.m_acceleration);
         }
 
         bool operator!=(const MOVEMENT& p_other) const

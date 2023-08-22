@@ -36,35 +36,27 @@ int ClStateTransition::Compute(STATE_POINTER p_previous_timestep_state, std::sha
 
     for(std::size_t variable_index=0; variable_index<p_previous_timestep_state->m_state_variables.size(); variable_index++)
     {
-        ClState::POSITION& point1 = p_previous_timestep_state->m_state_variables[variable_index];
-        ClState::POSITION& point2 = p_next_timestep_state->m_state_variables[variable_index];
+        float point1 = p_previous_timestep_state->m_state_variables[variable_index];
+        float point2 = p_next_timestep_state->m_state_variables[variable_index];
 
-        float deltaX = point2.m_x - point1.m_x;
-        float deltaY = point2.m_y - point1.m_y;
+        float new_velocity = (point2 - point1) / 1.0;  // Assuming time step is 1.0
+        new_state_transition_instance->m_state_variables_transitions[variable_index].m_velocity = new_velocity;
 
-        // Calculate the magnitude direction using the Pythagorean theorem
-        new_state_transition_instance->m_state_variables_transitions[variable_index].m_velocity_direction_x = deltaX;
-        new_state_transition_instance->m_state_variables_transitions[variable_index].m_velocity_direction_y = deltaY;
-        new_state_transition_instance->m_state_variables_transitions[variable_index].m_velocity_speed = std::sqrt(deltaX * deltaX + deltaY * deltaY);
-
-
-        float acceleration_previous_timestep_velocity_direction_x = 0.00;
-        float acceleration_previous_timestep_velocity_direction_y = 0.00;
+  
+        /*
+        *    Compute new acceleration
+        */
+        float acceleration_previous_timestep_velocity = 0.00;
 
         if(p_previous_timestep_state_transition != nullptr)
         {
-            acceleration_previous_timestep_velocity_direction_x = p_previous_timestep_state_transition->m_state_variables_transitions[variable_index].m_velocity_direction_x;
-            acceleration_previous_timestep_velocity_direction_y = p_previous_timestep_state_transition->m_state_variables_transitions[variable_index].m_velocity_direction_y;
+            acceleration_previous_timestep_velocity = p_previous_timestep_state_transition->m_state_variables_transitions[variable_index].m_velocity;
         }
 
+        float new_acceleration = (new_velocity - acceleration_previous_timestep_velocity) / 1.0;  // Assuming time step is 1.0                
+        new_state_transition_instance->m_state_variables_transitions[variable_index].m_acceleration = new_acceleration;
 
-        float accelerationX = (deltaX - acceleration_previous_timestep_velocity_direction_x);
-        float accelerationY = (deltaY - acceleration_previous_timestep_velocity_direction_y);
 
-        // Calculate the acceleration using the Pythagorean theorem
-        new_state_transition_instance->m_state_variables_transitions[variable_index].m_accelration_direction_x = accelerationX;
-        new_state_transition_instance->m_state_variables_transitions[variable_index].m_accelration_direction_y = accelerationY;
-        new_state_transition_instance->m_state_variables_transitions[variable_index].m_acceleration_speed = std::sqrt(accelerationX * accelerationX + accelerationY * accelerationY);
 
         po_new_transition_pointer = new_state_transition_instance;
     }
@@ -78,7 +70,7 @@ void ClStateTransition::Print()
     std::cout << "==== Printing state transition ====" << std::endl;
     for (std::size_t i=0; i<this->m_state_variables_transitions.size(); i++) 
     {
-        std::cout << "[" << i << "] : [Velocity :" << this->m_state_variables_transitions[i].m_velocity_direction_x << ", " << this->m_state_variables_transitions[i].m_velocity_direction_y << " @ " << this->m_state_variables_transitions[i].m_velocity_speed << "], [Acceleration : " << this->m_state_variables_transitions[i].m_accelration_direction_x << ", " << this->m_state_variables_transitions[i].m_accelration_direction_y << " @ " << this->m_state_variables_transitions[i].m_acceleration_speed << "]"  << std::endl;
+        std::cout << "[" << i << "] : [Velocity :" << this->m_state_variables_transitions[i].m_velocity << "], [Acceleration : " << this->m_state_variables_transitions[i].m_acceleration << "]"  << std::endl;
     }
     std::cout << std::endl << "==== End of state transition ====" << std::endl;    
 }
