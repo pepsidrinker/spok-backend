@@ -11,7 +11,7 @@ ClStateTransition::~ClStateTransition()
 int ClStateTransition::Create(std::size_t p_number_of_variable, std::shared_ptr<ClStateTransition>& po_new_state_transition)
 {
     auto new_state_transition = std::make_shared<ClStateTransition>();
-    new_state_transition->m_state_variables_transitions = std::vector<MOVEMENT>(p_number_of_variable);
+    new_state_transition->m_movement_learner_variables_transitions = nullptr;
     po_new_state_transition = new_state_transition;
     return 1;
 }

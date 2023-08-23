@@ -1,7 +1,7 @@
 #include "Include/ClState.hpp"
 #include "Include/ClOperator.hpp"
 #include "Include/ClProblem.hpp"
-#include "Include/ClLogicFlow.hpp"
+#include "Include/ClStateChain.hpp"
 //#include "Include/ClCausalInferer.hpp"
 #include "Include/ClMatrix.hpp"
 
@@ -10,7 +10,7 @@
 #include <iostream>
 
 STATE_POINTER g_initial_state = nullptr;
-LOGIC_FLOW_POINTER g_states_chain = nullptr;
+STATE_CHAIN_POINTER g_states_chain = nullptr;
 
 const std::size_t g_number_of_variables_per_state = 1;
 
@@ -48,17 +48,10 @@ int main()
 
     int result = 0;
 
-    // result = ClState::Create(g_number_of_variables_per_state,g_initial_state);
-    // if(result != 1)
-    // {
-    //     std::cout << "Error running [ClState::Create] with result [" << result << "]" << std::endl;
-    //     return -1;
-    // }
-
-    result = ClLogicFlow::Create(g_states_chain);
+    result = ClStateChain::Create(g_states_chain);
     if(result != 1)
     {
-        std::cout << "Error running [ClLogicFlow::Create] with result [" << result << "]" << std::endl;
+        std::cout << "Error running [ClStateChain::Create] with result [" << result << "]" << std::endl;
         return -2;
     }
 
@@ -72,7 +65,7 @@ int main()
         STATE_POINTER new_timestep_state = nullptr;
         if(ClState::Create(g_number_of_variables_per_state,new_timestep_state)!=1)
         {
-            std::cout << "Error running [ClLogicFlow::Create] with result [" << result << "]" << std::endl;
+            std::cout << "Error running [ClStateChain::Create] with result [" << result << "]" << std::endl;
             return -3;            
         }
 
@@ -98,8 +91,6 @@ int main()
 
         std::string rien;
         std::cin >> rien;
-        
-
     }
 
 
