@@ -96,7 +96,7 @@ void ClStateChain::Print()
 
         if(this->m_blocks[i].m_transition != nullptr)
         {
-            this->m_blocks[i].m_transition->Print();
+            //this->m_blocks[i].m_transition->Print();
         }    
 
         if(this->m_blocks[i].m_predictive_next_state != nullptr)

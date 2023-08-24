@@ -16,7 +16,7 @@ class ClStateTransition
         ClStateTransition();
         ~ClStateTransition();
         static int Create(std::size_t p_number_of_variable, std::shared_ptr<ClStateTransition>& po_new_state_transition);
-        void Print();
+        //void Print();
 };
 
 typedef std::shared_ptr<void> CUSTOM_TRANSITION_DATA_POINTER;

@@ -1,6 +1,7 @@
 #include "ClMovementLearner.hpp"
 
 
+ClMovementLearner::~ClMovementLearner(){}
 
 int ClMovementLearner::ComputeMovements(STATE_POINTER p_previous_timestep_state, std::shared_ptr<std::vector<ClMovement>>& p_previous_timestep_state_movements, STATE_POINTER p_next_timestep_state, std::shared_ptr<std::vector<ClMovement>>& po_new_transition_movements)
 {
@@ -67,7 +68,7 @@ int ClMovementLearner::GetTransition(ClStateChain* p_state_chain, CUSTOM_TRANSIT
         return -3;
     }
 
-    std:size_t number_of_variable = p_state_chain->m_blocks.back().m_state->m_state_variables.size();
+    std::size_t number_of_variable = p_state_chain->m_blocks.back().m_state->m_state_variables.size();
 
 
     std::shared_ptr<std::vector<ClMovement>> po_new_movements = std::make_shared<std::vector<ClMovement>>(number_of_variable);
@@ -104,6 +105,18 @@ int ClMovementLearner::GetTransition(ClStateChain* p_state_chain, CUSTOM_TRANSIT
     return 1;
 }
 
+
+void ClMovementLearner::Print(CUSTOM_TRANSITION_DATA_POINTER p_transition_data)
+{
+    std::cout << "==== Printing [ClMovementLearner] movements ====" << std::endl;
+    std::shared_ptr<std::vector<ClMovement>> movements = std::static_pointer_cast<std::vector<ClMovement>>(p_transition_data);
+
+    for (std::size_t i=0; i<movements->size(); i++) 
+    {
+        std::cout << "[" << i << "] : [Velocity :" << movements->at(i).m_velocity << "], [Acceleration : " << movements->at(i).m_acceleration << "]"  << std::endl;
+    }
+    std::cout << std::endl << "==== End of [ClMovementLearner] movements ====" << std::endl;      
+}
 
 // int ClMovementLearner::Predict(STATE_CHAIN_POINTER p_state_chain, float& po_predicted_value);
 // int ClMovementLearner::Learn(STATE_CHAIN_POINTER p_state_chain, float p_predicted_value, float p_actual_value);
