@@ -28,18 +28,21 @@ int ClStateChain::AddState(std::shared_ptr<ClState> p_state)
 
     int result = 0;
 
-    for(std::size_t i=0; i<this->m_learner_instances.size(); i++)
-    {
-        CUSTOM_TRANSITION_DATA_POINTER new_transation_data = nullptr;
-        result = this->m_learner_instances[i]->GetTransition(this,new_transation_data);
-    }
-
+    result = ClStateTransition::Create(p_state->m_state_variables.size(),new_block.m_transition);
     if(result != 1)
     {
-        return -5;
+        return -2;
     }
 
-    //new_block.m_transition = new_state_transition;
+    for(std::size_t i=0; i<this->m_learner_instances.size(); i++)
+    {
+        ClStateTransition::LEARNER_TRANSITION_INFORMATIONS learner_transition_informations;
+
+        learner_transition_informations.m_learner_instance = this->m_learner_instances[i];
+        result = this->m_learner_instances[i]->AddTimestep(p_state->m_state_variables,learner_transition_informations.m_learner_transition_data);
+
+        new_block.m_transition->m_learners_transitions.push_back(learner_transition_informations);
+    }
 
     this->m_blocks.push_back(new_block);
     

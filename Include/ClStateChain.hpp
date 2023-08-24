@@ -6,19 +6,17 @@
 
 #include "ClState.hpp"
 #include "ClStateTransition.hpp"
-
 #include "Learners/ClLearner.hpp"
 
-class ClLearner;
 
 class ClStateChain
 {
     struct STATE_CHAIN_BLOCK
     {
         std::uint64_t m_timestep;
-        STATE_POINTER m_state;
-        STATE_TRANSITION_POINTER m_transition;
-        STATE_POINTER m_predictive_next_state;
+        std::shared_ptr<ClState> m_state;
+        std::shared_ptr<ClStateTransition> m_transition;
+        std::shared_ptr<ClState>  m_predictive_next_state;
 
         STATE_CHAIN_BLOCK()
         {

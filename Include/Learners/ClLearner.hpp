@@ -1,15 +1,17 @@
 #pragma once
 
-#include "../ClStateChain.hpp"
-#include "../ClStateTransition.hpp"
-#include <memory>
 
-class ClStateChain;
+#include <memory>
+#include <vector>
+
 
 class ClLearner
 {
     public:
-        virtual int GetTransition(ClStateChain* p_state_chain, CUSTOM_TRANSITION_DATA_POINTER& po_new_transition_data) = 0;
+        const unsigned short LEARNER_TYPE = 0;
+        virtual int AddTimestep(std::vector<float>& p_current_timestep_variables, std::shared_ptr<void>& po_new_transition_data) = 0;
         virtual ~ClLearner();
-        virtual void Print(CUSTOM_TRANSITION_DATA_POINTER p_transition_data) = 0;
+        virtual void Print(std::shared_ptr<void> p_transition_data) = 0;
 };
+
+typedef std::shared_ptr<ClLearner> LEARNER_POINTER;

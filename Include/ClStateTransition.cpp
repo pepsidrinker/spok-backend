@@ -10,11 +10,24 @@ ClStateTransition::~ClStateTransition()
 
 int ClStateTransition::Create(std::size_t p_number_of_variable, std::shared_ptr<ClStateTransition>& po_new_state_transition)
 {
-    auto new_state_transition = std::make_shared<ClStateTransition>();
-    new_state_transition->m_movement_learner_variables_transitions = nullptr;
-    po_new_state_transition = new_state_transition;
+    po_new_state_transition = std::make_shared<ClStateTransition>();
     return 1;
 }
+
+
+// int ClStateTransition::GetLearnerTransitionDataByLearnerType(unsigned short p_learner_type, LEARNER_TRANSITION_INFORMATIONS& po_learner_transition_informations)
+// {
+//     for(std::size_t i=0; i<this->m_learners_transitions.size(); i++)
+//     {
+//         if(this->m_learners_transitions[i].m_learner_instance->LEARNER_TYPE == p_learner_type)
+//         {
+//             po_learner_transition_informations = this->m_learners_transitions[i];
+//             return 1;
+//         }
+//     }
+
+//     return -1;
+// }
 
 // int ClStateTransition::Compute(STATE_POINTER p_previous_timestep_state, std::shared_ptr<ClStateTransition> p_previous_timestep_state_transition, STATE_POINTER p_next_timestep_state, std::shared_ptr<ClStateTransition>& po_new_transition_pointer)
 // {

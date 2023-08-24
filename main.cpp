@@ -5,6 +5,8 @@
 //#include "Include/ClCausalInferer.hpp"
 #include "Include/ClMatrix.hpp"
 
+#include "Include/Learners/Movement/ClMovementLearner.hpp"
+
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -52,8 +54,25 @@ int main()
     if(result != 1)
     {
         std::cout << "Error running [ClStateChain::Create] with result [" << result << "]" << std::endl;
-        return -2;
+        return -1;
     }
+
+
+    /*
+    *    Instanciate our learners
+    */
+    MOVEMENT_LEARNER_POINTER movement_learner = nullptr;
+    result = ClMovementLearner::Create(movement_learner);
+    if(result != 1)
+    {
+        std::cout << "Error running [ClMovementLearner::Create with result [" << result << "]" << std::endl;
+        return -2;        
+    }
+
+    g_states_chain->m_learner_instances.push_back(movement_learner);
+
+
+    
 
 
     std::cout << "Populating initial state..." << std::endl;
