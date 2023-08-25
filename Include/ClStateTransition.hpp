@@ -18,11 +18,13 @@ class ClStateTransition
         {
             std::shared_ptr<ClLearner>  m_learner_instance;
             std::shared_ptr<void> m_learner_transition_data;
+            std::shared_ptr<ClState> m_next_timestep_predictive_state;
 
             LEARNER_TRANSITION_INFORMATIONS()
             {
                 this->m_learner_instance = nullptr;
                 this->m_learner_transition_data = nullptr;
+                this->m_next_timestep_predictive_state = nullptr;
             }
         };    
 

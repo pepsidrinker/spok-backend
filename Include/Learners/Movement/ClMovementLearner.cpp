@@ -96,6 +96,9 @@ int ClMovementLearner::AddTimestep(std::vector<float>& p_current_timestep_variab
     *po_new_movements = new_movements;
     po_new_transition_data = po_new_movements;
 
+    this->m_previous_timestep_variables = p_current_timestep_variables;
+    this->m_previous_timestep_movements = *po_new_movements;
+
     return 1;
 }
 
@@ -110,6 +113,45 @@ void ClMovementLearner::Print(std::shared_ptr<void> p_transition_data)
         std::cout << "[" << i << "] : [Velocity :" << movements->at(i).m_velocity << "], [Acceleration : " << movements->at(i).m_acceleration << "]"  << std::endl;
     }
     std::cout << std::endl << "==== End of [ClMovementLearner] movements ====" << std::endl;      
+}
+
+
+int ClMovementLearner::PredictNextStateVariable(float p_variable_current_value, ClMovement& p_movements, std::size_t p_number_of_timestep_in_the_future, float& po_variable_predicted_value)
+{
+    float predicted_value = 0.00;
+
+    predicted_value = p_variable_current_value + (p_movements.m_velocity * p_number_of_timestep_in_the_future) + (0.5 * p_movements.m_acceleration * p_number_of_timestep_in_the_future * p_number_of_timestep_in_the_future);
+    po_variable_predicted_value = predicted_value;
+
+    return 1;
+}
+
+int ClMovementLearner::PredictNextStateVariables(std::vector<float>& po_next_timestep, std::size_t p_number_of_timestep_in_the_future)
+{
+    if(p_number_of_timestep_in_the_future == 0)
+    {
+        return -1;
+    }
+
+    if(this->m_previous_timestep_variables.size()==0)
+    {
+        return -2;
+    }
+
+    int result = 0;
+
+    po_next_timestep = std::vector<float>(this->m_previous_timestep_variables.size());
+
+    for(std::size_t i=0; i<this->m_previous_timestep_variables.size(); i++)
+    {
+        result = this->PredictNextStateVariable(this->m_previous_timestep_variables[i],this->m_previous_timestep_movements[i],1,po_next_timestep[i]);
+        if(result != 1)
+        {
+            return -3;
+        }
+    }
+
+    return 1;
 }
 
 // int ClMovementLearner::Predict(STATE_CHAIN_POINTER p_state_chain, float& po_predicted_value);
