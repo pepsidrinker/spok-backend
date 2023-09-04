@@ -19,7 +19,7 @@ int ClState::Create(std::size_t p_number_of_variable, std::shared_ptr<ClState>& 
 
 void ClState::Print()
 {
-    std::cout << "==== Printing state ====" << std::endl;
+    std::cout << "==== Printing state of [" << this->m_state_variables.size() << "] variable(s) ====" << std::endl;
     for (std::size_t i=0; i<this->m_state_variables.size(); i++) 
     {
         std::cout << "[" << i << "] : [" << this->m_state_variables[i] << "]" << std::endl;
