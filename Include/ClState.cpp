@@ -26,3 +26,21 @@ void ClState::Print()
     }
     std::cout << std::endl << "==== End of state ====" << std::endl;    
 }
+
+bool ClState::IsEqualTo(const ClState& p_state)
+{
+    if (this->m_state_variables.size() != p_state.m_state_variables.size())
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < this->m_state_variables.size(); ++i)
+    {
+        if (this->m_state_variables[i] != p_state.m_state_variables[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
