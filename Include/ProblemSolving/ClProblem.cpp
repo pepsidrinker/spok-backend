@@ -7,9 +7,6 @@ ClProblem::ClProblem()
     this->m_problem_cluster = nullptr;
     this->m_parent_problem = 0;
     this->m_chosen_operator = nullptr;
-    this->m_is_solved_function_pointer = nullptr;
-
-    this->m_uid = this->GenerateUID();
 }
 
 ClProblem::~ClProblem()
@@ -17,15 +14,22 @@ ClProblem::~ClProblem()
 
 }
 
-std::uint32_t ClProblem::GenerateUID()
+int ClProblem::GenerateUID(std::string& po_uid)
 {
-    static std::uint32_t uid{ 0 };
-    return ++uid;    
-}
+    if(this->m_problematic_state == nullptr || this->m_chosen_operator ==nullptr || this->m_wanted_state == nullptr)
+    {
+        return -1;
+    }
 
-std::uint32_t ClProblem::GetUID()
-{
-    return this->m_uid;
+    XXH64_hash_t problematic_state_hash = XXH64(this->m_problematic_state->m_state_variables.data(), this->m_problematic_state->m_state_variables.size() * sizeof(float), 0);
+    XXH64_hash_t wanted_state_hash = XXH64(this->m_wanted_state->m_state_variables.data(), this->m_wanted_state->m_state_variables.size() * sizeof(float), 0);
+    XXH64_hash_t chosen_operator_hash = XXH64(this->m_chosen_operator->m_uid.c_str(),this->m_chosen_operator->m_uid.size(),0);
+
+    std::string result = std::to_string(problematic_state_hash);
+    result.append(std::to_string(wanted_state_hash));
+    result.append(std::to_string(chosen_operator_hash));
+
+    return result;
 }
 
 int ClProblem::GetProblemTypeID()
@@ -278,64 +282,60 @@ int ClProblem::IsEqualTo(PROBLEM_POINTER p_source_problem)
 
 int ClProblem::IsEqualTo(ClProblem* p_source_problem)
 {
-    if(this->IsInitialized()!=1)
-    {
-        return -1;
-    }
-
-    if(p_source_problem == nullptr)
-    {
-        return -2;
-    }
-
-    // if(this->GetProblemTypeID() != p_source_problem->GetProblemTypeID())
+    return this->m_uid == p_source_problem->m_uid;
+    // if(p_source_problem == nullptr)
     // {
-    //     return -3;
+    //     return -2;
     // }
 
+    // // if(this->GetProblemTypeID() != p_source_problem->GetProblemTypeID())
+    // // {
+    // //     return -3;
+    // // }
 
-    if(this->m_hypothetical_solution_state->IsEqualTo(*p_source_problem->m_hypothetical_solution_state)!=1)
-    {
-        return -5;
-    }
 
-    if(this->m_problematic_state->IsEqualTo(*p_source_problem->m_problematic_state)!=1)
-    {
-        return -6;
-    }
+    // if(this->m_hypothetical_solution_state->IsEqualTo(*p_source_problem->m_hypothetical_solution_state)!=1)
+    // {
+    //     return -5;
+    // }
 
-    if(this->m_possible_operators.size() != p_source_problem->m_possible_operators.size())
-    {
-        return -9;
-    }
+    // if(this->m_problematic_state->IsEqualTo(*p_source_problem->m_problematic_state)!=1)
+    // {
+    //     return -6;
+    // }
 
-    for(std::size_t i=0; i<this->m_possible_operators.size(); i++)
-    {
-        if(this->m_possible_operators[i]->IsEqualTo(*source_problem->m_possible_operators[i])!=1)
-        {
-            return -10;
-        }
-    }
+    // if(this->m_possible_operators.size() != p_source_problem->m_possible_operators.size())
+    // {
+    //     return -9;
+    // }
 
-    if(this->m_chosen_operator == nullptr && p_source_problem->m_chosen_operator != nullptr)
-    {
-        return -11;
-    }    
+    // for(std::size_t i=0; i<this->m_possible_operators.size(); i++)
+    // {
+    //     if(this->m_possible_operators[i]->IsEqualTo(*source_problem->m_possible_operators[i])!=1)
+    //     {
+    //         return -10;
+    //     }
+    // }
 
-    if(this->m_chosen_operator != nullptr && p_source_problem->m_chosen_operator == nullptr)
-    {
-        return -12;
-    }        
+    // if(this->m_chosen_operator == nullptr && p_source_problem->m_chosen_operator != nullptr)
+    // {
+    //     return -11;
+    // }    
 
-    if(this->m_chosen_operator != nullptr && p_source_problem->m_chosen_operator != nullptr)
-    {
-        if(this->m_chosen_operator->IsEqualTo(*p_source_problem->m_chosen_operator)!=1)
-        {
-            return -13;
-        }
-    }
+    // if(this->m_chosen_operator != nullptr && p_source_problem->m_chosen_operator == nullptr)
+    // {
+    //     return -12;
+    // }        
 
-    return 1;
+    // if(this->m_chosen_operator != nullptr && p_source_problem->m_chosen_operator != nullptr)
+    // {
+    //     if(this->m_chosen_operator->IsEqualTo(*p_source_problem->m_chosen_operator)!=1)
+    //     {
+    //         return -13;
+    //     }
+    // }
+
+    // return 1;
 }
 
 

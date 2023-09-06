@@ -5,6 +5,9 @@
 
 #include <memory>
 #include <vector>
+#include <string>
+
+#include <xxhash.h>
 
 
 class ClProblem
@@ -14,6 +17,7 @@ class ClProblem
     typedef std::shared_ptr<std::vector<PROBLEM_POINTER>> PROBLEM_STORE_POINTER;    
 
     public:
+        std::string m_uid;
         PROBLEM_STORE_POINTER m_previously_tried_hypotheses;
         PROBLEM_POINTER m_parent_problem;
 
@@ -35,6 +39,8 @@ class ClProblem
         virtual int SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_position_to_apply);        
 
         virtual int IsEqualTo(ClProblem* p_source_problem);
+
+        int GenerateUID(std::string& po_uid);
         
     public:
         ClProblem();

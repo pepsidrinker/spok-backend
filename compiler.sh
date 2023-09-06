@@ -27,8 +27,8 @@ g++ --std=c++17 -Wall -g -c -fPIC Include/Learners/Movement/*.cpp -lpthread
 g++ --std=c++17 -Wall -g -c -fPIC Include/Learners/*.cpp -lpthread
 
 g++ --std=c++17 -Wall -g -c -fPIC Include/*.cpp -lpthread
-g++ --std=c++17 -Wall -g -c main.cpp -lpthread  -lmemcached
-g++ --std=c++17 -Wall -g *.o -o a.out -lpthread  -lmemcached
+g++ --std=c++17 -Wall -g -c main.cpp -lpthread  -lmemcached -lxxhash
+g++ --std=c++17 -Wall -g *.o -o a.out -lpthread  -lmemcached -lxxhash
 
 echo "Cleaning ..."
 rm *.o
