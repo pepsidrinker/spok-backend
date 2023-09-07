@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ClState.hpp"
+#include "../ClState.hpp"
 
 #include <memory>
 #include <string>

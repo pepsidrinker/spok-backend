@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ClOperator.hpp"
-#include "../../ClState.hpp"
+#include "../ClState.hpp"
 
 #include <memory>
 #include <vector>
@@ -59,7 +59,6 @@ class ClProblem
         *    Used to simulate get_instance
         */
         virtual int GetProblemTypeID();  
-        virtual std::uint32_t GetUID(); 
         virtual int IsEqualTo(PROBLEM_POINTER p_source_problem);
         virtual int AmIBeingSolvedSomewhereElse(PROBLEM_POINTER& po_identical_problem);
 

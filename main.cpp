@@ -1,7 +1,8 @@
 #include "Include/ClState.hpp"
-#include "Include/ClOperator.hpp"
-#include "Include/ClProblem.hpp"
 #include "Include/ClStateChain.hpp"
+#include "Include/ProblemSolving/ClOperator.hpp"
+#include "Include/ProblemSolving/ClProblem.hpp"
+
 
 
 #include "Include/Learners/Movement/ClMovementLearner.hpp"
