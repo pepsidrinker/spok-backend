@@ -51,18 +51,17 @@ class ClProblem
         static int Create(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_possible_operators, STATE_POINTER p_wanted_state, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance);        
         //static int DefaultIsSolvedFunction(ClOperator* p_operator_to_apply);
 
-        int IsOperatorUsable(OPERATOR_POINTER p_operator);
+        //int IsOperatorUsable(OPERATOR_POINTER p_operator);
         int GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_operators, std::vector<OPERATOR_POINTER>& po_usable_operators);
         int ApplyOperator(OPERATOR_POINTER p_operator);                     
 
         /*
         *    Used to simulate get_instance
         */
-        virtual int GetProblemTypeID();  
         virtual int IsEqualTo(PROBLEM_POINTER p_source_problem);
         virtual int AmIBeingSolvedSomewhereElse(PROBLEM_POINTER& po_identical_problem);
 
-        virtual int IsInitialized();
+        //virtual int IsInitialized();
         //virtual int CreateAndCloneTo(PROBLEM_POINTER& po_target_problem);
         virtual int Solve(PROBLEM_POINTER& po_last_solved_sub_problem);
         virtual int IsSolved();

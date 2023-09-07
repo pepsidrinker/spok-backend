@@ -17,8 +17,6 @@ ClProblem::~ClProblem()
 
 int ClProblem::GenerateUID(std::string& po_uid)
 {
-    return 1;
-    /*
     if(this->m_problematic_state == nullptr || this->m_chosen_operator ==nullptr || this->m_wanted_state == nullptr)
     {
         return -1;
@@ -32,15 +30,10 @@ int ClProblem::GenerateUID(std::string& po_uid)
     result.append(std::to_string(wanted_state_hash));
     result.append(std::to_string(chosen_operator_hash));
 
-    return result;
-    */
-}
+    po_uid = result;
 
-int ClProblem::GetProblemTypeID()
-{
     return 1;
 }
-
 
 // int ClProblem::AddToProblemCluster(PROBLEM_CLUSTER_POINTER p_problem_cluster, PROBLEM_POINTER p_problem_to_add)
 // {
@@ -65,63 +58,63 @@ int ClProblem::GetProblemTypeID()
 //     return 1;
 // }
 
-int ClProblem::IsInitialized()
-{
-    // if(this->m_problematic_state == nullptr)
-    // {
-    //     return -3;
-    // }
+// int ClProblem::IsInitialized()
+// {
+//     if(this->m_problematic_state == nullptr)
+//     {
+//         return -3;
+//     }
 
-    // if(this->m_problematic_state->IsInitialized()!=1)
-    // {
-    //     return -4;
-    // }
+//     if(this->m_problematic_state->IsInitialized()!=1)
+//     {
+//         return -4;
+//     }
 
-    // if(this->m_hypothetical_solution_state == nullptr)
-    // {
-    //     return -5;
-    // }
+//     if(this->m_hypothetical_solution_state == nullptr)
+//     {
+//         return -5;
+//     }
 
-    // if(this->m_hypothetical_solution_state->IsInitialized()!=1)
-    // {
-    //     return -6;
-    // }
+//     if(this->m_hypothetical_solution_state->IsInitialized()!=1)
+//     {
+//         return -6;
+//     }
 
-    // // if(this->m_possible_operators.size()==0)
-    // // {
-    // //     return -7;
-    // // }
+//     // if(this->m_possible_operators.size()==0)
+//     // {
+//     //     return -7;
+//     // }
 
-    // for(std::size_t i=0; i<this->m_possible_operators.size(); i++)
-    // {
-    //     if(this->m_possible_operators[i]->IsInitialized()!=1)
-    //     {
-    //         return -8;
-    //     }
-    // }
+//     for(std::size_t i=0; i<this->m_possible_operators.size(); i++)
+//     {
+//         if(this->m_possible_operators[i]->IsInitialized()!=1)
+//         {
+//             return -8;
+//         }
+//     }
 
-    // if(this->m_problem_cluster == nullptr)
-    // {
-    //     return -9;
-    // }
+//     if(this->m_problem_cluster == nullptr)
+//     {
+//         return -9;
+//     }
 
-    // if(!this->m_problem_cluster->IsInitialized())
-    // {
-    //     return -10;
-    // }
+//     if(!this->m_problem_cluster->IsInitialized())
+//     {
+//         return -10;
+//     }
 
 
-    // for(std::size_t i=0; i<this->m_parameters.size(); i++)
-    // {
-    //     if(this->m_parameters[i]->IsInitialized()!=1)
-    //     {
-    //         return -8;
-    //     }
-    // }    
+//     for(std::size_t i=0; i<this->m_parameters.size(); i++)
+//     {
+//         if(this->m_parameters[i]->IsInitialized()!=1)
+//         {
+//             return -8;
+//         }
+//     }    
     
 
-    return 1;
-}
+//     return 1;
+// }
 
 
 int ClProblem::Create(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_possible_operators, STATE_POINTER p_wanted_state, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
@@ -287,118 +280,55 @@ int ClProblem::IsEqualTo(PROBLEM_POINTER p_source_problem)
 int ClProblem::IsEqualTo(ClProblem* p_source_problem)
 {
     return this->m_uid == p_source_problem->m_uid;
-    // if(p_source_problem == nullptr)
-    // {
-    //     return -2;
-    // }
-
-    // // if(this->GetProblemTypeID() != p_source_problem->GetProblemTypeID())
-    // // {
-    // //     return -3;
-    // // }
-
-
-    // if(this->m_hypothetical_solution_state->IsEqualTo(*p_source_problem->m_hypothetical_solution_state)!=1)
-    // {
-    //     return -5;
-    // }
-
-    // if(this->m_problematic_state->IsEqualTo(*p_source_problem->m_problematic_state)!=1)
-    // {
-    //     return -6;
-    // }
-
-    // if(this->m_possible_operators.size() != p_source_problem->m_possible_operators.size())
-    // {
-    //     return -9;
-    // }
-
-    // for(std::size_t i=0; i<this->m_possible_operators.size(); i++)
-    // {
-    //     if(this->m_possible_operators[i]->IsEqualTo(*source_problem->m_possible_operators[i])!=1)
-    //     {
-    //         return -10;
-    //     }
-    // }
-
-    // if(this->m_chosen_operator == nullptr && p_source_problem->m_chosen_operator != nullptr)
-    // {
-    //     return -11;
-    // }    
-
-    // if(this->m_chosen_operator != nullptr && p_source_problem->m_chosen_operator == nullptr)
-    // {
-    //     return -12;
-    // }        
-
-    // if(this->m_chosen_operator != nullptr && p_source_problem->m_chosen_operator != nullptr)
-    // {
-    //     if(this->m_chosen_operator->IsEqualTo(*p_source_problem->m_chosen_operator)!=1)
-    //     {
-    //         return -13;
-    //     }
-    // }
-
-    // return 1;
 }
 
 
 int ClProblem::Solve(PROBLEM_POINTER& po_last_solved_sub_problem)
 {
-//     if(this->IsInitialized()!=1)
-//     {
-//         return -1;
-//     }
+    int result = 0;
 
-//     int result = 0;
+    if(this->IsSolved()==1)
+    {
+        return 1;
+    }
 
-//     if(this->IsSolved()==1)
-//     {
-//         return 1;
-//     }
+    std::vector<OPERATOR_POINTER> usable_operators;
+    result = this->GetUsableOperators(this->m_possible_operators, usable_operators);
+    if(result!=1)
+    {
+        std::cout << "[ClProblem::Solve][Problem " << this->m_uid <<"] Error running [ClState::GetUsableOperators] with result [" << result << "]. (Press any key once you checked it out)" << std::endl;
+        std::string nothing;
+        std::cin >> nothing;
+        return -2;            
+    } 
 
-//     std::vector<OPERATOR_POINTER> usable_operators;
-//     result = this->GetUsableOperators(this->m_possible_operators, usable_operators);
-//     if(result!=1)
-//     {
-//         std::cout << "[ClProblem::Solve][Problem " << this->m_uid <<"] Error running [ClState::GetUsableOperators] with result [" << result << "]. (Press any key once you checked it out)" << std::endl;
-//         std::string nothing;
-//         std::cin >> nothing;
-//         return -2;            
-//     } 
-
-//     if(usable_operators.size()==0)
-//     {
-//         std::cout << "[ClProblem::Solve][Problem " << this->m_uid <<"]: No more possible operator, dead-end" << std::endl;
-//         return -3;            
-//     }
+    if(usable_operators.size()==0)
+    {
+        std::cout << "[ClProblem::Solve][Problem " << this->m_uid <<"]: No more possible operator, dead-end" << std::endl;
+        return -3;            
+    }
 
 
-//     std::cout << "[ClProblem::Solve][Problem " << this->m_uid <<"]: [" << usable_operators.size() << "] operator(s) detected, creating sub-problem for each one of them" << std::endl;
+    std::cout << "[ClProblem::Solve][Problem " << this->m_uid <<"]: [" << usable_operators.size() << "] operator(s) detected, creating sub-problem for each one of them" << std::endl;
 
-//     for(std::size_t operator_id = 0; operator_id < usable_operators.size(); operator_id++)
-//     {
-//         if(this->SolveUsingSpecifiedOperator(usable_operators[operator_id])==1)
-//         {
-//             return 1;
-//         }
-//     }        
+    for(std::size_t operator_id = 0; operator_id < usable_operators.size(); operator_id++)
+    {
+        if(this->SolveUsingSpecifiedOperator(usable_operators[operator_id])==1)
+        {
+            return 1;
+        }
+    }        
  
 
 
-//     std::cout << "[ClProblem::Solve][Problem " << this->m_parent_problem <<"]: Tryed all operator(s), nothing worked : dead-end" << std::endl;
-//     return -5;
+    std::cout << "[ClProblem::Solve][Problem " << this->m_parent_problem <<"]: Tryed all operator(s), nothing worked : dead-end" << std::endl;
+    return -5;
 
     return 1;
 }
 
 int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_position_to_apply)
 {
-    if(this->IsInitialized()!=1)
-    {
-        return -1;
-    }
-
     this->m_chosen_operator = p_possible_operator_position_to_apply;    
 
     int result = 0;
@@ -413,13 +343,13 @@ int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_
     if(result < 0)
     {
         std::cout << "    [ClProblem::SolveUsingSpecifiedOperator] : [AmIBeingSolvedSomewhereElse] returned an error of [" << result << "]" << std::endl;    
-        return -3;
+        return -1;
     }
 
     if(result == 1)
     {
         std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->m_uid <<"]: Is already being computer by Problem [" << identical_problem->m_uid << "], exiting" << std::endl;
-        return -4;
+        return -2;
     }
 
     std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->m_uid <<"] will now try to apply 1 single operator [" << p_possible_operator_position_to_apply->m_uid << "]" << std::endl;
@@ -428,7 +358,7 @@ int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_
     if(result!=1)
     {
         std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->m_uid <<"]: Could not apply the only available operator, nothing worked : dead-end" << std::endl;
-        return -5;                 
+        return -3;                 
     }
 
     /*
@@ -451,8 +381,8 @@ int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_
 
 
 
-int ClProblem::IsOperatorUsable(OPERATOR_POINTER p_operator)
-{
+// int ClProblem::IsOperatorUsable(OPERATOR_POINTER p_operator)
+// {
 //     if(this->IsInitialized()!=1)
 //     {
 //         return -1;
@@ -515,9 +445,7 @@ int ClProblem::IsOperatorUsable(OPERATOR_POINTER p_operator)
 //     }
 
 //     return 1;
-
-    return -1;
-}
+// }
 
 
 
@@ -525,24 +453,24 @@ int ClProblem::GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_oper
 {
     if(p_possible_operators.size()==0)
     {
-        return -2;
+        return -1;
     }  
 
     po_usable_operators.clear();
 
-    int result = 0;
+    //int result = 0;
     for(std::size_t i=0; i<p_possible_operators.size(); i++)
     {
         if(p_possible_operators[i] == nullptr)
         {
-            return -3;
+            return -2;
         }
 
-        result = this->IsOperatorUsable(p_possible_operators[i]);
-        if(result==1)
-        {
+        // result = this->IsOperatorUsable(p_possible_operators[i]);
+        // if(result==1)
+        // {
             po_usable_operators.push_back(p_possible_operators[i]);
-        }
+        //}
     } 
 
     return 1;
@@ -554,27 +482,16 @@ int ClProblem::ApplyOperator(OPERATOR_POINTER p_operator)
 {
     if(p_operator == nullptr)
     {
-        return -2;
+        return -1;
     }
-
-    // po_new_state = nullptr;
-    // if(ClState::CreateState(po_new_state)!=1)
-    // {
-    //     return -4;
-    // }
-
-    // if(po_new_state->CloneFrom(this)!=1)
-    // {
-    //     return -5;
-    // }    
 
     std::cout << "[ClProblem::ApplyOperator] Applying operator [" << p_operator->m_uid << "] on problem [" << this->m_uid << "]" << std::endl;
 
-    int result = p_operator->Execute(this->m_problematic_state, this->m_hypothetical_solution_state);
+    int result = p_operator->Execute(this);
     if(result != 1)
     {
         std::cout << "[ClProblem::ApplyOperator] Apply function returned [" << result << "]" << std::endl;
-        return -6;
+        return -2;
     }
 
     return 1;
@@ -589,29 +506,20 @@ int ClProblem::IsSolved()
 
 int ClProblem::AmIBeingSolvedSomewhereElse(PROBLEM_POINTER& po_identical_problem)
 {
-    // if(this->IsInitialized()!=1)
-    // {
-    //     return -1;
-    // }
+    for(std::size_t i=0; i<this->m_previously_tried_hypotheses->size(); i++)
+    {
+        if(this->m_previously_tried_hypotheses->at(i).get() == this)
+        {
+            continue;
+        } 
 
-    // std::shared_lock<std::shared_mutex> problem_cluster_shared_lock(this->m_problem_cluster->m_mutex);
+        int result = this->IsEqualTo(this->m_previously_tried_hypotheses->at(i));
+        if(result == 1)
+        {
+            po_identical_problem = this->m_previously_tried_hypotheses->at(i);
+            return 1;
+        }
+    }
 
-
-    // for(std::size_t i=0; i<this->m_problem_cluster->m_problems.size(); i++)
-    // {
-    //     if(this->m_problem_cluster->m_problems[i].get() == this)
-    //     {
-    //         continue;
-    //     } 
-
-    //     int result = this->IsEqualTo(this->m_problem_cluster->m_problems[i]);
-    //     if(result == 1)
-    //     {
-    //         po_identical_problem = this->m_problem_cluster->m_problems[i];
-    //         return 1;
-    //     }
-    // }
-
-    // return 0;
-    return -1;
+    return 0;
 }

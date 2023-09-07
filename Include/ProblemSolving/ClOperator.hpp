@@ -7,16 +7,19 @@
 
 class ClOperator
 {
-  public:
-    typedef int (*EXECUTE_FUNCTION_POINTER)(STATE_POINTER& p_source_state, STATE_POINTER& po_destination_pointer);
-    EXECUTE_FUNCTION_POINTER m_execute_function;
-    std::string m_uid;
+    typedef int (*EXECUTE_FUNCTION_POINTER)(void* p_problem_instance);
+  
+    protected:
+        EXECUTE_FUNCTION_POINTER m_execute_function;
 
-    ClOperator();
-    ~ClOperator();
-    int Execute(STATE_POINTER& p_source_state, STATE_POINTER& po_destination_state);
-    static std::shared_ptr<ClOperator> Create(EXECUTE_FUNCTION_POINTER p_execute_function);
-    bool IsEqualTo(const ClOperator& p_operator);    
+    public:
+        std::string m_uid;
+
+        ClOperator();
+        ~ClOperator();
+        int Execute(void* p_problem_instance);
+        static std::shared_ptr<ClOperator> Create(EXECUTE_FUNCTION_POINTER p_execute_function);
+        bool IsEqualTo(const ClOperator& p_operator);    
     
     
 };
