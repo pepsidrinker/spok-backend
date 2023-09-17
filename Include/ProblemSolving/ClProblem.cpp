@@ -381,71 +381,73 @@ int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_
 
 
 
-// int ClProblem::IsOperatorUsable(OPERATOR_POINTER p_operator)
-// {
-//     if(this->IsInitialized()!=1)
-//     {
-//         return -1;
-//     }
+int ClProblem::IsOperatorUsable(OPERATOR_POINTER p_operator)
+{
+    return 1;
 
-//     if(p_operator == nullptr)
-//     {
-//         return -2;
-//     }
+    // if(this->IsInitialized()!=1)
+    // {
+    //     return -1;
+    // }
 
-//     if(p_operator->IsInitialized()!=1)
-//     {
-//         return -3;
-//     }
+    // if(p_operator == nullptr)
+    // {
+    //     return -2;
+    // }
 
-//     if(p_operator->m_pre_selection_conditions == nullptr)
-//     {
-//         return 1;
-//     }
+    // if(p_operator->IsInitialized()!=1)
+    // {
+    //     return -3;
+    // }
 
-//     int result = 0;
+    // if(p_operator->m_pre_selection_conditions == nullptr)
+    // {
+    //     return 1;
+    // }
 
-
-
-//     CONDITIONAL_STATEMENT_CONTEXT_POINTER context = nullptr;
-//     result = ClConditionalStatementContext::CreateConditionalStatementContext(context);
-//     if(result != 1)
-//     {
-//         std::cout << "[ClProblem::IsOperatorUsable] Error running [ClConditionalStatementContext::CreateConditionalStatementContext] with result [" << result << "]" << std::endl;
-//         return -4;        
-//     } 
-
-//     context->m_data = this;    
-
-//     bool evaluation_result = false;
-//     result =  p_operator->m_pre_selection_conditions->EvaluateStatement(context,evaluation_result);
-//     if(result != 1)
-//     {
-//         std::cout << "[ClProblem::IsOperatorUsable] Error running [ClConditionalStatement::EvaluateStatement] with result [" << result << "]" << std::endl;
-//         return -5;        
-//     }    
+    // int result = 0;
 
 
-//     std::string evaluation_string;
-//     ClConditionalStatement::GetStatementString(p_operator->m_pre_selection_conditions,evaluation_string);
-//     std::cout << "Evaluation string is [" <<  evaluation_string << "]" << std::endl;
-//     if(evaluation_result)
-//     {
-//         std::cout << "Evaluation result is [TRUE]" << std::endl;
-//     }
-//     else
-//     {
-//         std::cout << "Evaluation result is [FALSE]" << std::endl;
-//     }
+
+    // CONDITIONAL_STATEMENT_CONTEXT_POINTER context = nullptr;
+    // result = ClConditionalStatementContext::CreateConditionalStatementContext(context);
+    // if(result != 1)
+    // {
+    //     std::cout << "[ClProblem::IsOperatorUsable] Error running [ClConditionalStatementContext::CreateConditionalStatementContext] with result [" << result << "]" << std::endl;
+    //     return -4;        
+    // } 
+
+    // context->m_data = this;    
+
+    // bool evaluation_result = false;
+    // result =  p_operator->m_pre_selection_conditions->EvaluateStatement(context,evaluation_result);
+    // if(result != 1)
+    // {
+    //     std::cout << "[ClProblem::IsOperatorUsable] Error running [ClConditionalStatement::EvaluateStatement] with result [" << result << "]" << std::endl;
+    //     return -5;        
+    // }    
+
+
+    // std::string evaluation_string;
+    // ClConditionalStatement::GetStatementString(p_operator->m_pre_selection_conditions,evaluation_string);
+    // std::cout << "Evaluation string is [" <<  evaluation_string << "]" << std::endl;
+    // if(evaluation_result)
+    // {
+    //     std::cout << "Evaluation result is [TRUE]" << std::endl;
+    // }
+    // else
+    // {
+    //     std::cout << "Evaluation result is [FALSE]" << std::endl;
+    // }
     
 
-//     if(!evaluation_result)
-//     {
-//         return 0;
-//     }
+    // if(!evaluation_result)
+    // {
+    //     return 0;
+    // }
 
-//     return 1;
-// }
+    // return 1;
+}
 
 
 
@@ -458,7 +460,7 @@ int ClProblem::GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_oper
 
     po_usable_operators.clear();
 
-    //int result = 0;
+    int result = 0;
     for(std::size_t i=0; i<p_possible_operators.size(); i++)
     {
         if(p_possible_operators[i] == nullptr)
@@ -466,11 +468,11 @@ int ClProblem::GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_oper
             return -2;
         }
 
-        // result = this->IsOperatorUsable(p_possible_operators[i]);
-        // if(result==1)
-        // {
+        result = this->IsOperatorUsable(p_possible_operators[i]);
+        if(result==1)
+        {
             po_usable_operators.push_back(p_possible_operators[i]);
-        //}
+        }
     } 
 
     return 1;

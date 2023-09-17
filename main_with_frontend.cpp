@@ -19,10 +19,11 @@ STATE_CHAIN_POINTER g_states_chain = nullptr;
 const std::size_t g_number_of_variables_per_state = 1;
 
 
-int operator_wait(STATE_POINTER& p_source_state, STATE_POINTER& po_destination_pointer)
-{
-    return 1;
-}
+// int operator_touch(STATE_POINTER& p_source_state, STATE_POINTER& po_destination_pointer)
+// {
+//     return 1;
+// }
+
 
 
 int main()
@@ -84,15 +85,6 @@ int main()
         std::cout << "New timestep arrived" << std::endl;
 
         g_states_chain->AddState(new_timestep_state);
-
-
-        /*
-        *   What do we predict for the next state ?
-        *   If we notice that letting thing run their course wont get us closer to our goal, 
-        *   we can intervene and apply an operator to the current state.
-        */
-
-
         // float predicted_position;
         // if(g_states_chain->m_blocks.back().m_predictive_next_state != nullptr)
         // {
@@ -125,5 +117,3 @@ int main()
 //step 1 : make a model of the world through association , then intervention, then conterfactuals
 //step 2 : defined the ultimate goal
 //step 3 : sub/problem solving loop
-
-
