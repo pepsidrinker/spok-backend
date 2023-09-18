@@ -3,7 +3,8 @@
 ClProblem::ClProblem()
 {
     this->m_problematic_state = nullptr;
-    this->m_wanted_state = nullptr;
+    //this->m_wanted_state = nullptr;
+    this->m_solution_distance_function = nullptr;
     this->m_hypothetical_solution_state = nullptr;
     this->m_previously_tried_hypotheses = nullptr;
     this->m_parent_problem = nullptr;
@@ -17,17 +18,15 @@ ClProblem::~ClProblem()
 
 int ClProblem::GenerateUID(std::string& po_uid)
 {
-    if(this->m_problematic_state == nullptr || this->m_chosen_operator ==nullptr || this->m_wanted_state == nullptr)
+    if(this->m_problematic_state == nullptr || this->m_chosen_operator ==nullptr)
     {
         return -1;
     }
 
     XXH64_hash_t problematic_state_hash = XXH64(this->m_problematic_state->m_state_variables.data(), this->m_problematic_state->m_state_variables.size() * sizeof(float), 0);
-    XXH64_hash_t wanted_state_hash = XXH64(this->m_wanted_state->m_state_variables.data(), this->m_wanted_state->m_state_variables.size() * sizeof(float), 0);
     XXH64_hash_t chosen_operator_hash = XXH64(this->m_chosen_operator->m_uid.c_str(),this->m_chosen_operator->m_uid.size(),0);
 
     std::string result = std::to_string(problematic_state_hash);
-    result.append(std::to_string(wanted_state_hash));
     result.append(std::to_string(chosen_operator_hash));
 
     po_uid = result;
@@ -117,7 +116,7 @@ int ClProblem::GenerateUID(std::string& po_uid)
 // }
 
 
-int ClProblem::Create(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_possible_operators, STATE_POINTER p_wanted_state, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
+int ClProblem::Create(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
 {
     int result = 0;
 
@@ -143,7 +142,8 @@ int ClProblem::Create(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTE
     po_problem_instance->m_previously_tried_hypotheses = p_previously_tried_hypotheses;
     po_problem_instance->m_parent_problem = p_parent_problem;
     po_problem_instance->m_problematic_state = p_current_state;
-    po_problem_instance->m_wanted_state = p_wanted_state;
+    //po_problem_instance->m_wanted_state = p_wanted_state;
+    po_problem_instance->m_solution_distance_function = p_solution_distance_function;
     po_problem_instance->m_possible_operators = p_possible_operators;
 
     /*
@@ -501,7 +501,13 @@ int ClProblem::ApplyOperator(OPERATOR_POINTER p_operator)
 
 int ClProblem::IsSolved()
 {
-    return this->m_hypothetical_solution_state->IsEqualTo(*this->m_wanted_state);
+    if(this->m_hypothetical_solution_state == nullptr)
+    {
+        return -1;
+    }
+
+    //return this->m_hypothetical_solution_state->IsEqualTo(*this->m_wanted_state);
+    return this->m_solution_distance_function(this,this->m_hypothetical_solution_state) == 0.00;
 }
 
 

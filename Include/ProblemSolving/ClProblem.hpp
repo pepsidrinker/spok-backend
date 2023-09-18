@@ -14,19 +14,21 @@ class ClProblem
 {
     public:
     typedef std::shared_ptr<ClProblem> PROBLEM_POINTER;
-    typedef std::shared_ptr<std::vector<PROBLEM_POINTER>> PROBLEM_STORE_POINTER;    
+    typedef std::shared_ptr<std::vector<PROBLEM_POINTER>> PROBLEM_STORE_POINTER;   
+    typedef float (*PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER)(ClProblem* p_problem, STATE_POINTER p_state_to_evaluate);
 
     public:
         std::string m_uid;
         PROBLEM_STORE_POINTER m_previously_tried_hypotheses;
         PROBLEM_POINTER m_parent_problem;
+        PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER m_solution_distance_function;
 
 
         /*
         *    Initial state of the problem
         */
         STATE_POINTER m_problematic_state;
-        STATE_POINTER m_wanted_state;
+        //STATE_POINTER m_wanted_state;
 
         /*
         *    New state which hypothetically closer to the solution
@@ -48,7 +50,7 @@ class ClProblem
 
         //static int AddToProblemCluster(PROBLEM_CLUSTER_POINTER p_problem_cluster, PROBLEM_POINTER p_problem_to_add);       
 
-        static int Create(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_possible_operators, STATE_POINTER p_wanted_state, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance);        
+        static int Create(STATE_POINTER p_current_state, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance);        
         //static int DefaultIsSolvedFunction(ClOperator* p_operator_to_apply);
 
         int IsOperatorUsable(OPERATOR_POINTER p_operator);
@@ -69,3 +71,4 @@ class ClProblem
 
 typedef std::shared_ptr<ClProblem> PROBLEM_POINTER;
 typedef std::shared_ptr<std::vector<PROBLEM_POINTER>> PROBLEM_STORE_POINTER; 
+typedef int (*PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER)(ClProblem* p_problem, STATE_POINTER p_state_to_evaluate);

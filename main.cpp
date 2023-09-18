@@ -24,6 +24,15 @@ int operator_wait(STATE_POINTER& p_source_state, STATE_POINTER& po_destination_p
     return 1;
 }
 
+float GetDistanceBetweenBallAndCharacter(ClProblem* p_problem, STATE_POINTER p_state_to_evaluate)
+{
+    float ball_position_y = p_state_to_evaluate->m_state_variables.back();
+    float character_position_y = p_state_to_evaluate->m_state_variables[p_state_to_evaluate->m_state_variables.size()-3];
+    float distance = std::abs(character_position_y - ball_position_y);
+
+    return 1.0/(distance+0.000001);
+}
+
 
 int main()
 {
@@ -63,6 +72,12 @@ int main()
     }
 
     g_states_chain->m_learner_instances.push_back(movement_learner);
+
+
+    /*
+    *    Instanciate our problem
+    */
+    
 
 
     
