@@ -11,6 +11,7 @@
 
 class ClStateChain
 {
+    public:
     struct STATE_CHAIN_BLOCK
     {
         std::uint64_t m_timestep;
@@ -33,10 +34,10 @@ class ClStateChain
 
     public:
         std::vector<STATE_CHAIN_BLOCK> m_blocks;
-        std::vector< std::shared_ptr<ClLearner> > m_learner_instances; 
+        
 
     public:
-        int AddState(std::shared_ptr<ClState> p_state);
+        //int AddState(std::shared_ptr<ClState> p_state);
 
         static int Create(std::shared_ptr<ClStateChain>& po_new_logic_block);
         void Print();

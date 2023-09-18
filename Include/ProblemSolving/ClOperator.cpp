@@ -8,18 +8,21 @@ ClOperator::~ClOperator()
 {
 }
 
-std::shared_ptr<ClOperator> ClOperator::Create(EXECUTE_FUNCTION_POINTER p_execute_function)
+int ClOperator::Create(EXECUTE_FUNCTION_POINTER p_execute_function,  std::shared_ptr<ClOperator>& po_new_instance)
 {
     if(p_execute_function == nullptr)
     {
-        return nullptr;
+        return -1;
     }
 
     std::shared_ptr<ClOperator> new_operator = std::make_shared<ClOperator>();
     new_operator->m_execute_function = p_execute_function;
     std::size_t execute_function_address = (std::size_t)(p_execute_function);
     new_operator->m_uid = std::to_string(execute_function_address);
-    return new_operator;
+
+    po_new_instance = new_operator;
+
+    return 1;
 }
 
 

@@ -1,12 +1,14 @@
 #include "Include/ClState.hpp"
-#include "Include/ClStateChain.hpp"
-#include "Include/ProblemSolving/ClOperator.hpp"
-#include "Include/ProblemSolving/ClProblem.hpp"
+// #include "Include/ClStateChain.hpp"
+// #include "Include/ProblemSolving/ClOperator.hpp"
+// #include "Include/ProblemSolving/ClProblem.hpp"
 
 
 
-#include "Include/Learners/Movement/ClMovementLearner.hpp"
+// #include "Include/Learners/Movement/ClMovementLearner.hpp"
 #include "Include/StateReaders/Memcache/ClMemcacheStateReader.hpp"
+
+#include "Include/ClIntelligenceUnit.hpp"
 
 
 #include <string>
@@ -19,18 +21,26 @@ STATE_CHAIN_POINTER g_states_chain = nullptr;
 const std::size_t g_number_of_variables_per_state = 1;
 
 
-int operator_wait(STATE_POINTER& p_source_state, STATE_POINTER& po_destination_pointer)
+int operator_wait(void* p_problem_instance)
 {
     return 1;
 }
+
+// int operator_move_right(void* p_problem_instance)
+// {
+//     return 1;
+// }
 
 float GetDistanceBetweenBallAndCharacter(ClProblem* p_problem, STATE_POINTER p_state_to_evaluate)
 {
     float ball_position_y = p_state_to_evaluate->m_state_variables.back();
     float character_position_y = p_state_to_evaluate->m_state_variables[p_state_to_evaluate->m_state_variables.size()-3];
     float distance = std::abs(character_position_y - ball_position_y);
+    float error_score = 1.0/(distance+0.000001);
+ 
+    std::cout << "Ball position [" << ball_position_y << "], character position [" << character_position_y << "], distance [" << distance << "], error score [" << error_score << "]" << std::endl;
 
-    return 1.0/(distance+0.000001);
+    return error_score;
 }
 
 
@@ -39,13 +49,6 @@ int main()
     std::cout << "Initializing...please wait" << std::endl;
 
     int result = 0;
-
-    result = ClStateChain::Create(g_states_chain);
-    if(result != 1)
-    {
-        std::cout << "Error running [ClStateChain::Create] with result [" << result << "]" << std::endl;
-        return -1;
-    }
 
 
     /*
@@ -61,29 +64,34 @@ int main()
 
 
     /*
-    *    Instanciate our learners
+    *    Prepare all we need to solve our main problem
     */
-    MOVEMENT_LEARNER_POINTER movement_learner = nullptr;
-    result = ClMovementLearner::Create(movement_learner);
+    OPERATOR_POINTER operator_wait_pointer = nullptr;
+    result = ClOperator::Create(operator_wait, operator_wait_pointer);
     if(result != 1)
     {
-        std::cout << "Error running [ClMovementLearner::Create] with result [" << result << "]" << std::endl;
+        std::cout << "Error running [ClOperator::Create] with result [" << result << "]" << std::endl;
         return -2;        
     }
 
-    g_states_chain->m_learner_instances.push_back(movement_learner);
+    std::vector<OPERATOR_POINTER> possible_operators;
+    possible_operators.push_back(operator_wait_pointer);
+
+
+    INTELLIGENCE_UNIT_POINTER g_intelligence_unit = nullptr;
+    result = ClIntelligenceUnit::Create(possible_operators, GetDistanceBetweenBallAndCharacter, g_intelligence_unit);
+    if(result != 1)
+    {
+        std::cout << "Error running [ClIntelligenceUnit::Create] with result [" << result << "]" << std::endl;
+        return -3;        
+    }
+
 
 
     /*
-    *    Instanciate our problem
+    *    Main loop
     */
-    
-
-
-    
-
-
-    std::cout << "Populating initial state..." << std::endl;
+    std::cout << "Entering main loop" << std::endl;
 
     while(1)
     {
@@ -98,7 +106,17 @@ int main()
         }
         std::cout << "New timestep arrived" << std::endl;
 
-        g_states_chain->AddState(new_timestep_state);
+        result = g_intelligence_unit->AddNewTimestep(new_timestep_state);
+        if(result != 1)
+        {
+            std::cout << "Error running [ClIntelligenceUnit::AddNewTimestep] with result [" << result << "]" << std::endl;
+            return -4;                    
+        }
+
+      
+
+
+
 
 
         /*
@@ -108,13 +126,13 @@ int main()
         */
 
 
-        float predicted_position;
-        if(g_states_chain->m_blocks.back().m_predictive_next_state != nullptr)
-        {
-            predicted_position = g_states_chain->m_blocks.back().m_predictive_next_state->m_state_variables.back();
-        }
+        // float predicted_position;
+        // if(g_states_chain->m_blocks.back().m_predictive_next_state != nullptr)
+        // {
+        //     predicted_position = g_states_chain->m_blocks.back().m_predictive_next_state->m_state_variables.back();
+        // }
 
-        std::cout << "Current ball position [" << new_timestep_state->m_state_variables.back() << "],  predicted next position [" << predicted_position << "]" << std::endl;
+        //std::cout << "Current ball position [" << new_timestep_state->m_state_variables.back() << "],  predicted next position [" << predicted_position << "], which gives us an error of [" << g_main_problem->GetCurrentStateSolutionDistance() << "]" << std::endl;
 
         // std::cout << "Latest block of global state chain for timestep [" << g_current_timestep << "]" << std::endl;
         // g_states_chain->Print();

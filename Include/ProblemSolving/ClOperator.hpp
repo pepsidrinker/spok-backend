@@ -18,7 +18,7 @@ class ClOperator
         ClOperator();
         ~ClOperator();
         int Execute(void* p_problem_instance);
-        static std::shared_ptr<ClOperator> Create(EXECUTE_FUNCTION_POINTER p_execute_function);
+        static int Create(EXECUTE_FUNCTION_POINTER p_execute_function, std::shared_ptr<ClOperator>& po_new_instance);
         bool IsEqualTo(const ClOperator& p_operator);    
     
     
