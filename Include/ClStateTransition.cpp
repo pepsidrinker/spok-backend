@@ -14,6 +14,28 @@ int ClStateTransition::Create(std::size_t p_number_of_variable, std::shared_ptr<
     return 1;
 }
 
+std::shared_ptr<ClStateTransition> ClStateTransition::Clone()
+{
+    /*
+    *    WATCH OUT ! [cloned_learner_transition.m_learner_transition_data = this->m_learners_transitions[i].m_learner_transition_data] IS A SHALLOW COPY
+    */
+    std::vector<LEARNER_TRANSITION_INFORMATIONS> cloned_learner_transitions;
+    for(std::size_t i=0; i<this->m_learners_transitions.size(); i++)
+    {
+        LEARNER_TRANSITION_INFORMATIONS cloned_learner_transition;
+        cloned_learner_transition.m_learner_instance = this->m_learners_transitions[i].m_learner_instance;
+        cloned_learner_transition.m_learner_transition_data = this->m_learners_transitions[i].m_learner_transition_data;
+        cloned_learner_transition.m_next_timestep_predictive_state = this->m_learners_transitions[i].m_next_timestep_predictive_state;
+        cloned_learner_transitions.push_back(cloned_learner_transition);
+    }
+
+    std::shared_ptr<ClStateTransition> new_state_transition = nullptr;
+    ClStateTransition::Create(this->m_learners_transitions.size(), new_state_transition);
+    new_state_transition->m_learners_transitions = cloned_learner_transitions;
+    new_state_transition->m_chosen_operator = this->m_chosen_operator;
+    return new_state_transition;
+}
+
 
 // int ClStateTransition::GetLearnerTransitionDataByLearnerType(unsigned short p_learner_type, LEARNER_TRANSITION_INFORMATIONS& po_learner_transition_informations)
 // {

@@ -16,6 +16,13 @@ int ClState::Create(std::size_t p_number_of_variable, std::shared_ptr<ClState>& 
     return 1;
 }
 
+std::shared_ptr<ClState> ClState::Clone()
+{
+    auto new_state = std::make_shared<ClState>();
+    new_state->m_state_variables = this->m_state_variables;
+    return new_state;
+}
+
 
 void ClState::Print()
 {

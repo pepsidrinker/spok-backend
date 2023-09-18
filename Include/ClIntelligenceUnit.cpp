@@ -132,13 +132,20 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
             return -3;
         }
     }
-
-    /*
-    *    Update our problem with our newest information
-    */
-    PROBLEM_POINTER found_solution = nullptr;
-    result = this->m_problem->ProposeSolution(found_solution);
     
     return 1;
 
+}
+
+int ClIntelligenceUnit::ProposeSolution(STATE_CHAIN_POINTER& po_solution_state_chain)
+{
+    PROBLEM_POINTER proposed_solution = nullptr;
+    int result = this->m_problem->ProposeSolution(proposed_solution);
+    if(result != 1)
+    {
+        std::cout << "[ClIntelligenceUnit::ProposeSolution] Error running [ClProblem::ProposeSolution] with result [" << result << "]" << std::endl;        
+        return -1;
+    }
+
+    return 1;
 }

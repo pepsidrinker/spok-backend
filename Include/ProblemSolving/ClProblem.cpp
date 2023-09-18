@@ -10,6 +10,7 @@ ClProblem::ClProblem()
     this->m_previously_tried_hypotheses = nullptr;
     this->m_parent_problem = nullptr;
     this->m_chosen_operator = nullptr;
+    this->m_hypothetical_solution_distance = std::numeric_limits<float>::max();
 }
 
 ClProblem::~ClProblem()
@@ -130,6 +131,10 @@ float ClProblem::GetCurrentStateSolutionDistance()
 //     return 1;
 // }
 
+// int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
+// {
+//     return ClProblem::Create(p_state_chain, p_possible_operators, p_solution_distance_function, p_previously_tried_hypotheses, p_parent_problem.get(), po_problem_instance);
+// }
 
 int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
 {
@@ -331,7 +336,15 @@ int ClProblem::ProposeSolution(PROBLEM_POINTER& po_last_solved_sub_problem)
 
     for(std::size_t operator_id = 0; operator_id < usable_operators.size(); operator_id++)
     {
-        if(this->SolveUsingSpecifiedOperator(usable_operators[operator_id])==1)
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_uid <<"]: Trying operator [" << usable_operators[operator_id]->m_uid << "]" << std::endl;
+
+        /*
+        *    Cloning our problem, but with a single operator
+        */
+        PROBLEM_POINTER new_problem = nullptr;
+
+        result = ClProblem::Create(this->m_state_chain->Clone(), this->m_possible_operators, this->m_solution_distance_function, this->m_previously_tried_hypotheses, this->shared_from_this(), new_problem);
+        if(new_problem->SolveUsingSpecifiedOperator(usable_operators[operator_id])==1)
         {
             return 1;
         }
@@ -525,7 +538,7 @@ int ClProblem::IsSolved()
     }
 
     //return this->m_hypothetical_solution_state->IsEqualTo(*this->m_wanted_state);
-    return this->m_solution_distance_function(this,this->m_hypothetical_solution_state) == 0.00;
+    return this->m_solution_distance_function(this,this->m_hypothetical_solution_state) <=  0.15;
 }
 
 

@@ -12,7 +12,7 @@
 #include <xxhash.h>
 
 
-class ClProblem
+class ClProblem : public std::enable_shared_from_this<ClProblem>
 {
     public:
     typedef std::shared_ptr<ClProblem> PROBLEM_POINTER;
@@ -36,6 +36,8 @@ class ClProblem
         *    New state which hypothetically closer to the solution
         */
         STATE_POINTER m_hypothetical_solution_state;
+        float m_hypothetical_solution_distance;
+
         std::vector<OPERATOR_POINTER> m_possible_operators;
         OPERATOR_POINTER m_chosen_operator;
    
@@ -53,6 +55,7 @@ class ClProblem
         //static int AddToProblemCluster(PROBLEM_CLUSTER_POINTER p_problem_cluster, PROBLEM_POINTER p_problem_to_add);       
 
         static int Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance);        
+        // static int Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, ClProblem* p_parent_problem, PROBLEM_POINTER& po_problem_instance);        
         //static int DefaultIsSolvedFunction(ClOperator* p_operator_to_apply);
 
         int IsOperatorUsable(OPERATOR_POINTER p_operator);

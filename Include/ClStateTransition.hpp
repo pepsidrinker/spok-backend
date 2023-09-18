@@ -10,6 +10,7 @@
 #include <memory>
 
 class ClLearner;
+class ClOperator;
 
 class ClStateTransition
 {
@@ -19,6 +20,8 @@ class ClStateTransition
             std::shared_ptr<ClLearner>  m_learner_instance;
             std::shared_ptr<void> m_learner_transition_data;
             std::shared_ptr<ClState> m_next_timestep_predictive_state;
+            std::shared_ptr<ClOperator> m_chosen_operator;
+
 
             LEARNER_TRANSITION_INFORMATIONS()
             {
@@ -29,10 +32,12 @@ class ClStateTransition
         };    
 
         std::vector<LEARNER_TRANSITION_INFORMATIONS> m_learners_transitions;
+        std::shared_ptr<ClOperator> m_chosen_operator;
 
         ClStateTransition();
         ~ClStateTransition();
         static int Create(std::size_t p_number_of_variable, std::shared_ptr<ClStateTransition>& po_new_state_transition);
+        std::shared_ptr<ClStateTransition> Clone();
         //int GetLearnerTransitionDataByLearnerType(unsigned short p_learner_type, LEARNER_TRANSITION_INFORMATIONS& po_learner_transition_informations);
         //void Print();
 };

@@ -23,6 +23,8 @@ const std::size_t g_number_of_variables_per_state = 1;
 
 int operator_wait(void* p_problem_instance)
 {
+    ClProblem* problem_instance = (ClProblem*)p_problem_instance;
+    problem_instance->m_hypothetical_solution_state = problem_instance->m_state_chain->m_blocks.back().m_state->Clone();
     return 1;
 }
 
@@ -111,6 +113,14 @@ int main()
         {
             std::cout << "Error running [ClIntelligenceUnit::AddNewTimestep] with result [" << result << "]" << std::endl;
             return -4;                    
+        }
+
+        STATE_CHAIN_POINTER solution_chain = nullptr;
+        result = g_intelligence_unit->ProposeSolution(solution_chain);
+        if(result != 1)
+        {
+            std::cout << "Error running [ClIntelligenceUnit::ProposeSolution] with result [" << result << "]" << std::endl;
+            return -5;                    
         }
 
       
