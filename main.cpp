@@ -93,23 +93,23 @@ int main()
         */
 
 
-        // float predicted_position;
-        // if(g_states_chain->m_blocks.back().m_predictive_next_state != nullptr)
-        // {
-        //     predicted_position = g_states_chain->m_blocks.back().m_predictive_next_state->m_state_variables[0];
-        // }
+        float predicted_position;
+        if(g_states_chain->m_blocks.back().m_predictive_next_state != nullptr)
+        {
+            predicted_position = g_states_chain->m_blocks.back().m_predictive_next_state->m_state_variables.back();
+        }
 
-        //std::cout << "Current position [" << state_variable << "],  predicted next position [" << predicted_position << "]" << std::endl;
+        std::cout << "Current ball position [" << new_timestep_state->m_state_variables.back() << "],  predicted next position [" << predicted_position << "]" << std::endl;
 
         // std::cout << "Latest block of global state chain for timestep [" << g_current_timestep << "]" << std::endl;
         // g_states_chain->Print();
-        std::cout << "Press any key to keep running" << std::endl;
-        std::cout << "==================================================" << std::endl;
+        // std::cout << "Press any key to keep running" << std::endl;
+        // std::cout << "==================================================" << std::endl;
 
-        std::cout << std::endl << std::endl << std::endl;
+        // std::cout << std::endl << std::endl << std::endl;
 
-        std::string rien;
-        std::cin >> rien;
+        // std::string rien;
+        // std::cin >> rien;
     }
 
 
