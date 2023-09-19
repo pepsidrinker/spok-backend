@@ -2,8 +2,6 @@
 
 ClProblem::ClProblem()
 {
-    //this->m_problematic_state = nullptr;
-    //this->m_wanted_state = nullptr;
     this->m_state_chain = nullptr;
     this->m_solution_distance_function = nullptr;
     this->m_hypothetical_solution_state = nullptr;
@@ -18,24 +16,24 @@ ClProblem::~ClProblem()
 
 }
 
-int ClProblem::GenerateUID(std::string& po_uid)
+std::string ClProblem::GetUID()
 {
-    if(this->m_state_chain == nullptr || this->m_state_chain->m_blocks.size() == 0 || this->m_chosen_operator ==nullptr)
+    if(this->m_state_chain == nullptr || this->m_state_chain->m_blocks.size() == 0)
     {
-        return -1;
+        return "INVALID_UID";
     }
 
     STATE_POINTER problematic_state = this->m_state_chain->m_blocks.back().m_state;
-
     XXH64_hash_t problematic_state_hash = XXH64(problematic_state->m_state_variables.data(), problematic_state->m_state_variables.size() * sizeof(float), 0);
-    XXH64_hash_t chosen_operator_hash = XXH64(this->m_chosen_operator->m_uid.c_str(),this->m_chosen_operator->m_uid.size(),0);
 
-    std::string result = std::to_string(problematic_state_hash);
-    result.append(std::to_string(chosen_operator_hash));
+    std::string result = std::to_string(problematic_state_hash);    
 
-    po_uid = result;
+    if(this->m_chosen_operator != nullptr)
+    {
+        result.append(this->m_chosen_operator->m_uid);
+    }
 
-    return 1;
+    return result;
 }
 
 
@@ -186,6 +184,11 @@ int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_PO
     return 1;    
 }
 
+bool ClProblem::IsInitialized()
+{
+    return this->m_state_chain != nullptr && this->m_state_chain->m_blocks.size() > 0 && this->m_state_chain->m_blocks.back().m_state != nullptr;
+}
+
 
 // int ClProblem::DefaultIsSolvedFunction(ClOperator* p_operator_to_apply)
 // {
@@ -302,7 +305,7 @@ int ClProblem::IsEqualTo(PROBLEM_POINTER p_source_problem)
 
 int ClProblem::IsEqualTo(ClProblem* p_source_problem)
 {
-    return this->m_uid == p_source_problem->m_uid;
+    return this->GetUID() == p_source_problem->GetUID();
 }
 
 
@@ -319,7 +322,7 @@ int ClProblem::ProposeSolution(PROBLEM_POINTER& po_last_solved_sub_problem)
     result = this->GetUsableOperators(this->m_possible_operators, usable_operators);
     if(result!=1)
     {
-        std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_uid <<"] Error running [ClState::GetUsableOperators] with result [" << result << "]. (Press any key once you checked it out)" << std::endl;
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"] Error running [ClState::GetUsableOperators] with result [" << result << "]. (Press any key once you checked it out)" << std::endl;
         std::string nothing;
         std::cin >> nothing;
         return -2;            
@@ -327,16 +330,16 @@ int ClProblem::ProposeSolution(PROBLEM_POINTER& po_last_solved_sub_problem)
 
     if(usable_operators.size()==0)
     {
-        std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_uid <<"]: No more possible operator, dead-end" << std::endl;
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: No more possible operator, dead-end" << std::endl;
         return -3;            
     }
 
 
-    std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_uid <<"]: [" << usable_operators.size() << "] operator(s) detected, creating sub-problem for each one of them" << std::endl;
+    std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: [" << usable_operators.size() << "] operator(s) detected, creating sub-problem for each one of them" << std::endl;
 
     for(std::size_t operator_id = 0; operator_id < usable_operators.size(); operator_id++)
     {
-        std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_uid <<"]: Trying operator [" << usable_operators[operator_id]->m_uid << "]" << std::endl;
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: Trying operator [" << usable_operators[operator_id]->m_uid << "]" << std::endl;
 
         /*
         *    Cloning our problem, but with a single operator
@@ -344,6 +347,27 @@ int ClProblem::ProposeSolution(PROBLEM_POINTER& po_last_solved_sub_problem)
         PROBLEM_POINTER new_problem = nullptr;
 
         result = ClProblem::Create(this->m_state_chain->Clone(), this->m_possible_operators, this->m_solution_distance_function, this->m_previously_tried_hypotheses, this->shared_from_this(), new_problem);
+        new_problem->m_chosen_operator = usable_operators[operator_id];
+
+        /*
+        *    Check if this problem is already being solved somewhere else
+        */
+        PROBLEM_POINTER identical_problem = nullptr;
+        result = new_problem->AmIBeingSolvedSomewhereElse(identical_problem);
+        if(result < 0)
+        {
+            std::cout << "    [ClProblem::SolveUsingSpecifiedOperator] : [AmIBeingSolvedSomewhereElse] returned an error of [" << result << "]" << std::endl;    
+            return -4;
+        }
+
+        if(result == 1)
+        {
+            std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"]: Is already being computer by Problem [" << identical_problem->GetUID() << "], exiting" << std::endl;
+            continue;
+        }
+
+        this->m_previously_tried_hypotheses->m_problems.push_back(new_problem);
+
         if(new_problem->SolveUsingSpecifiedOperator(usable_operators[operator_id])==1)
         {
             return 1;
@@ -360,35 +384,14 @@ int ClProblem::ProposeSolution(PROBLEM_POINTER& po_last_solved_sub_problem)
 
 int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_position_to_apply)
 {
-    this->m_chosen_operator = p_possible_operator_position_to_apply;    
-
     int result = 0;
 
-    /*
-    *    Check if this problem is already being solved somewhere else
-    */
-   
-    //std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_uid <<"] is checking if it is already being computed elsewhere" << std::endl;
-    PROBLEM_POINTER identical_problem = nullptr;
-    result = this->AmIBeingSolvedSomewhereElse(identical_problem);
-    if(result < 0)
-    {
-        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator] : [AmIBeingSolvedSomewhereElse] returned an error of [" << result << "]" << std::endl;    
-        return -1;
-    }
-
-    if(result == 1)
-    {
-        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->m_uid <<"]: Is already being computer by Problem [" << identical_problem->m_uid << "], exiting" << std::endl;
-        return -2;
-    }
-
-    std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->m_uid <<"] will now try to apply 1 single operator [" << p_possible_operator_position_to_apply->m_uid << "]" << std::endl;
+    std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"] will now try to apply 1 single operator [" << p_possible_operator_position_to_apply->m_uid << "]" << std::endl;
 
     result = this->ApplyOperator(this->m_chosen_operator);
     if(result!=1)
     {
-        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->m_uid <<"]: Could not apply the only available operator, nothing worked : dead-end" << std::endl;
+        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"]: Could not apply the only available operator, nothing worked : dead-end" << std::endl;
         return -3;                 
     }
 
@@ -401,7 +404,7 @@ int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_
         /*
         *    Congrats, problem solved :)
         */
-        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->m_uid <<"]: Sucessfully solved problem" << std::endl;        
+        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"]: Sucessfully solved problem" << std::endl;        
         return 1;          
     }
 
@@ -518,7 +521,7 @@ int ClProblem::ApplyOperator(OPERATOR_POINTER p_operator)
         return -1;
     }
 
-    std::cout << "[ClProblem::ApplyOperator] Applying operator [" << p_operator->m_uid << "] on problem [" << this->m_uid << "]" << std::endl;
+    std::cout << "[ClProblem::ApplyOperator] Applying operator [" << p_operator->m_uid << "] on problem [" << this->GetUID() << "]" << std::endl;
 
     int result = p_operator->Execute(this);
     if(result != 1)
@@ -537,8 +540,7 @@ int ClProblem::IsSolved()
         return -1;
     }
 
-    //return this->m_hypothetical_solution_state->IsEqualTo(*this->m_wanted_state);
-    return this->m_solution_distance_function(this,this->m_hypothetical_solution_state) <=  0.15;
+    return this->m_solution_distance_function(this,this->m_hypothetical_solution_state) <=  0.05;
 }
 
 

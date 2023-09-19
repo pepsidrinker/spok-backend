@@ -8,7 +8,7 @@ ClStateTransition::~ClStateTransition()
 {
 }
 
-int ClStateTransition::Create(std::size_t p_number_of_variable, std::shared_ptr<ClStateTransition>& po_new_state_transition)
+int ClStateTransition::Create(std::shared_ptr<ClStateTransition>& po_new_state_transition)
 {
     po_new_state_transition = std::make_shared<ClStateTransition>();
     return 1;
@@ -30,7 +30,7 @@ std::shared_ptr<ClStateTransition> ClStateTransition::Clone()
     }
 
     std::shared_ptr<ClStateTransition> new_state_transition = nullptr;
-    ClStateTransition::Create(this->m_learners_transitions.size(), new_state_transition);
+    ClStateTransition::Create(new_state_transition);
     new_state_transition->m_learners_transitions = cloned_learner_transitions;
     new_state_transition->m_chosen_operator = this->m_chosen_operator;
     return new_state_transition;

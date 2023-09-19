@@ -19,7 +19,6 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
     typedef float (*PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER)(ClProblem* p_problem, STATE_POINTER p_state_to_evaluate);
 
     public:
-        std::string m_uid;
         PROBLEM_STORE_POINTER m_previously_tried_hypotheses;
         PROBLEM_POINTER m_parent_problem;
         PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER m_solution_distance_function;
@@ -29,8 +28,6 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
         *    Initial state of the problem
         */
         STATE_CHAIN_POINTER m_state_chain;
-        //STATE_POINTER m_problematic_state;
-        //STATE_POINTER m_wanted_state;
 
         /*
         *    New state which hypothetically closer to the solution
@@ -46,11 +43,13 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
 
         virtual int IsEqualTo(ClProblem* p_source_problem);
 
-        int GenerateUID(std::string& po_uid);
+        std::string GetUID();
         
     public:
         ClProblem();
         ~ClProblem();
+
+        bool IsInitialized();
 
         //static int AddToProblemCluster(PROBLEM_CLUSTER_POINTER p_problem_cluster, PROBLEM_POINTER p_problem_to_add);       
 

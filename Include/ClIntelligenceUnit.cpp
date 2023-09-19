@@ -43,6 +43,7 @@ int ClIntelligenceUnit::Create(std::vector<OPERATOR_POINTER>& p_possible_operato
 
     po_intelligence_unit_instance->m_possible_operators = p_possible_operators;
     po_intelligence_unit_instance->m_solution_distance_function = p_solution_distance_function;
+    po_intelligence_unit_instance->m_problem = nullptr;
 
 
 
@@ -52,29 +53,12 @@ int ClIntelligenceUnit::Create(std::vector<OPERATOR_POINTER>& p_possible_operato
 
 bool ClIntelligenceUnit::IsInitialized()
 {
-    return false;
+    return (this->m_state_chain != nullptr && this->m_problem_store != nullptr && this->m_problem != nullptr);
 }
 
-int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
+
+int ClIntelligenceUnit::AddNewBlockToStateChain(STATE_POINTER& p_state)
 {
-    if(this->m_state_chain == nullptr || this->m_problem_store == nullptr)
-    {
-        std::cout << "[ClIntelligenceUnit::AddNewTimestep] Instance not fully initialized" << std::endl;        
-        return -1;
-    }
-
-    if(p_state == nullptr)
-    {
-        std::cout << "[ClIntelligenceUnit::AddNewTimestep] Parameter [p_state] is null" << std::endl;        
-        return -2;
-    }
-
-    int result = 0;
-
-
-    /*
-    *    Insert a new block in our state chain
-    */
     ClStateChain::STATE_CHAIN_BLOCK new_block;
     new_block.m_state = p_state;
     new_block.m_transition = nullptr;
@@ -85,7 +69,7 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
         return 1;
     }
 
-    result = ClStateTransition::Create(p_state->m_state_variables.size(),new_block.m_transition);
+    int result = ClStateTransition::Create(new_block.m_transition);
     if(result != 1)
     {
         return -2;
@@ -119,6 +103,31 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
 
     this->m_state_chain->m_blocks.push_back(new_block);
 
+    return 1;
+}
+
+int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
+{
+    if(this->m_state_chain == nullptr || this->m_problem_store == nullptr)
+    {
+        std::cout << "[ClIntelligenceUnit::AddNewTimestep] Instance not fully initialized" << std::endl;        
+        return -1;
+    }
+
+    if(p_state == nullptr)
+    {
+        std::cout << "[ClIntelligenceUnit::AddNewTimestep] Parameter [p_state] is null" << std::endl;        
+        return -2;
+    }
+
+    int result = 0;
+
+    result = this->AddNewBlockToStateChain(p_state);
+    if(result != 1)
+    {
+        std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClIntelligenceUnit::AddNewBlockToStateChain] with result [" << result << "]" << std::endl;        
+        return -3;
+    }
 
     /*
     *    Make sure ww have at least 1 state in our chain to create our problem
@@ -129,8 +138,10 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
         if(result != 1)
         {
             std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClProblem::Create] with result [" << result << "]" << std::endl;        
-            return -3;
+            return -4;
         }
+
+        std::cout << "[ClIntelligenceUnit::AddNewTimestep] Problem successfully created" << std::endl;
     }
     
     return 1;
@@ -139,12 +150,18 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
 
 int ClIntelligenceUnit::ProposeSolution(STATE_CHAIN_POINTER& po_solution_state_chain)
 {
+    if(!this->IsInitialized())
+    {
+        std::cout << "[ClIntelligenceUnit::ProposeSolution] Instance not fully initialized" << std::endl;        
+        return -1;
+    }
+
     PROBLEM_POINTER proposed_solution = nullptr;
     int result = this->m_problem->ProposeSolution(proposed_solution);
     if(result != 1)
     {
         std::cout << "[ClIntelligenceUnit::ProposeSolution] Error running [ClProblem::ProposeSolution] with result [" << result << "]" << std::endl;        
-        return -1;
+        return -2;
     }
 
     return 1;

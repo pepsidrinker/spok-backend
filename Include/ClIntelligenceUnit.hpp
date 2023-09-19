@@ -21,6 +21,9 @@ class ClIntelligenceUnit
 {
     typedef std::shared_ptr<ClIntelligenceUnit> INTELLIGENCE_UNIT_POINTER;
 
+    protected:
+        int AddNewBlockToStateChain(STATE_POINTER& p_state);
+
     public:
         STATE_CHAIN_POINTER m_state_chain;
         PROBLEM_STORE_POINTER m_problem_store;
