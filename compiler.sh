@@ -33,8 +33,8 @@ g++ --std=c++17 -Wall -g -c -fPIC Include/Learners/*.cpp -lpthread
 g++ --std=c++17 -Wall -g -c -fPIC Include/ProblemSolving/*.cpp -lpthread
 
 g++ --std=c++17 -Wall -g -c -fPIC Include/*.cpp -lpthread
-g++ --std=c++17 -Wall -g -c main.cpp -lpthread  -lmemcached -lxxhash
-g++ --std=c++17 -Wall -g *.o -o a.out -lpthread  -lmemcached -lxxhash
+g++ --std=c++17 -Wall -g -c main.cpp -lpthread  -lmemcached -lxxhash -lmori
+g++ --std=c++17 -Wall -g *.o -o a.out -lpthread  -lmemcached -lxxhash -lmori
 
 echo "Cleaning ..."
 rm *.o

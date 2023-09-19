@@ -1,11 +1,4 @@
 #include "Include/ClState.hpp"
-// #include "Include/ClStateChain.hpp"
-// #include "Include/ProblemSolving/ClOperator.hpp"
-// #include "Include/ProblemSolving/ClProblem.hpp"
-
-
-
-// #include "Include/Learners/Movement/ClMovementLearner.hpp"
 #include "Include/StateReaders/Memcache/ClMemcacheStateReader.hpp"
 
 #include "Include/ClIntelligenceUnit.hpp"
@@ -48,6 +41,7 @@ float GetDistanceBetweenBallAndCharacter(ClProblem* p_problem, STATE_POINTER p_s
 
 int main()
 {
+
     std::cout << "Initializing...please wait" << std::endl;
 
     int result = 0;
@@ -115,8 +109,8 @@ int main()
             return -4;                    
         }
 
-        STATE_CHAIN_POINTER solution_chain = nullptr;
-        result = g_intelligence_unit->ProposeSolution(solution_chain);
+        OPERATOR_POINTER proposed_operator = nullptr;
+        result = g_intelligence_unit->ProposeOperatorToGetCloserToSolution(proposed_operator, 1);
         if(result != 1)
         {
             std::cout << "Error running [ClIntelligenceUnit::ProposeSolution] with result [" << result << "]" << std::endl;

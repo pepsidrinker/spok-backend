@@ -134,7 +134,18 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
     */
     if(this->m_problem == nullptr)
     {
-        result = ClProblem::Create(this->m_state_chain,this->m_possible_operators,this->m_solution_distance_function,this->m_problem_store,nullptr,this->m_problem);
+        /*
+        *    Create a hypotheses tree for our main problem
+        */
+        std::shared_ptr<Mori::ClCedrusLibani> new_hypotheses_tree_pointer = std::make_shared<Mori::ClCedrusLibani>(1024*1024*5, 1, 1024);
+        if(!new_hypotheses_tree_pointer->IsUsable())
+        {
+            std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error instanciating new hypotheses tree running [ClCedrusLibani::ClCedrusLibani]" << std::endl;        
+            return -4;
+        }        
+
+
+        result = ClProblem::Create(this->m_state_chain,this->m_possible_operators,this->m_solution_distance_function,new_hypotheses_tree_pointer,nullptr,this->m_problem);
         if(result != 1)
         {
             std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClProblem::Create] with result [" << result << "]" << std::endl;        
@@ -148,7 +159,7 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
 
 }
 
-int ClIntelligenceUnit::ProposeSolution(STATE_CHAIN_POINTER& po_solution_state_chain)
+int ClIntelligenceUnit::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_proposed_operator, std::size_t p_number_of_steps_to_foresee)
 {
     if(!this->IsInitialized())
     {
@@ -156,8 +167,8 @@ int ClIntelligenceUnit::ProposeSolution(STATE_CHAIN_POINTER& po_solution_state_c
         return -1;
     }
 
-    PROBLEM_POINTER proposed_solution = nullptr;
-    int result = this->m_problem->ProposeSolution(proposed_solution);
+    OPERATOR_POINTER proposed_operator = nullptr;
+    int result = this->m_problem->ProposeOperatorToGetCloserToSolution(proposed_operator, p_number_of_steps_to_foresee);
     if(result != 1)
     {
         std::cout << "[ClIntelligenceUnit::ProposeSolution] Error running [ClProblem::ProposeSolution] with result [" << result << "]" << std::endl;        

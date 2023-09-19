@@ -13,6 +13,9 @@
 
 #include "Learners/Movement/ClMovementLearner.hpp"
 
+#include <mori/ClCedrusLibani.hpp>
+#include <mori/ClCedrusLibaniTopologicIteratorDepthFirst.hpp>
+
 
 #include <memory>
 
@@ -41,7 +44,7 @@ class ClIntelligenceUnit
 
         static int Create(std::vector<OPERATOR_POINTER>& p_possible_operators, ClProblem::PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, INTELLIGENCE_UNIT_POINTER& po_intelligence_unit_instance);
         int AddNewTimestep(STATE_POINTER& p_state);
-        int ProposeSolution(STATE_CHAIN_POINTER& po_solution_state_chain);
+        int ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_proposed_operator, std::size_t p_number_of_steps_to_foresee);
 };
 
 typedef std::shared_ptr<ClIntelligenceUnit> INTELLIGENCE_UNIT_POINTER;
