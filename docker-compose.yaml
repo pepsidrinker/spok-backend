@@ -5,10 +5,10 @@ services:
     build: .
     image: spok_backend
     container_name: spok_backend
-    runtime: nvidia
+    #runtime: nvidia
     tty: true
     stdin_open: true
-    #command: /bin/bash
+    command: /bin/bash
     volumes:
       - .:/workspace
     networks:

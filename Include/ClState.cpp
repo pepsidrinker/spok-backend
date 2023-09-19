@@ -16,6 +16,13 @@ int ClState::Create(std::size_t p_number_of_variable, std::shared_ptr<ClState>& 
     return 1;
 }
 
+std::shared_ptr<ClState> ClState::Clone()
+{
+    auto new_state = std::make_shared<ClState>();
+    new_state->m_state_variables = this->m_state_variables;
+    return new_state;
+}
+
 
 void ClState::Print()
 {
@@ -25,4 +32,22 @@ void ClState::Print()
         std::cout << "[" << i << "] : [" << this->m_state_variables[i] << "]" << std::endl;
     }
     std::cout << std::endl << "==== End of state ====" << std::endl;    
+}
+
+bool ClState::IsEqualTo(const ClState& p_state)
+{
+    if (this->m_state_variables.size() != p_state.m_state_variables.size())
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < this->m_state_variables.size(); ++i)
+    {
+        if (this->m_state_variables[i] != p_state.m_state_variables[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
