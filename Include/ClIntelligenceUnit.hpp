@@ -6,12 +6,11 @@
 
 #include "ClState.hpp"
 #include "ClStateChain.hpp"
+#include "ClPredictor.hpp"
 
 #include "ProblemSolving/ClOperator.hpp"
 #include "ProblemSolving/ClProblem.hpp"
-#include "ProblemSolving/ClProblemStore.hpp"
 
-#include "Learners/Movement/ClMovementLearner.hpp"
 
 #include <mori/ClCedrusLibani.hpp>
 #include <mori/ClCedrusLibaniTopologicIteratorDepthFirst.hpp>
@@ -29,12 +28,11 @@ class ClIntelligenceUnit
 
     public:
         STATE_CHAIN_POINTER m_state_chain;
-        PROBLEM_STORE_POINTER m_problem_store;
         PROBLEM_POINTER m_problem;
         std::vector<OPERATOR_POINTER> m_possible_operators;
         ClProblem::PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER m_solution_distance_function;
 
-        MOVEMENT_LEARNER_POINTER m_movement_learner;
+        PREDICTOR_POINTER m_predictor;
 
 
         ClIntelligenceUnit();

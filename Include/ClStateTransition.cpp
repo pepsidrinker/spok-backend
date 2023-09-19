@@ -25,7 +25,6 @@ std::shared_ptr<ClStateTransition> ClStateTransition::Clone()
         LEARNER_TRANSITION_INFORMATIONS cloned_learner_transition;
         cloned_learner_transition.m_learner_instance = this->m_learners_transitions[i].m_learner_instance;
         cloned_learner_transition.m_learner_transition_data = this->m_learners_transitions[i].m_learner_transition_data;
-        cloned_learner_transition.m_next_timestep_predictive_state = this->m_learners_transitions[i].m_next_timestep_predictive_state;
         cloned_learner_transitions.push_back(cloned_learner_transition);
     }
 

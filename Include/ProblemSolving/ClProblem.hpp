@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ClProblemStore.hpp"
 #include "ClOperator.hpp"
 #include "../ClState.hpp"
 #include "../ClStateChain.hpp"
+#include "../ClPredictor.hpp"
 
 #include <memory>
 #include <vector>
@@ -25,8 +25,8 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
     public:
         std::shared_ptr<Mori::ClCedrusLibani> m_hypotheses_tree;
         Mori::NODE_ID m_current_hypothesis_tree_node;
+        PREDICTOR_POINTER m_predictor;
 
-        PROBLEM_STORE_POINTER m_previously_tried_hypotheses;
         PROBLEM_POINTER m_parent_problem;
         PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER m_solution_distance_function;
 
@@ -60,8 +60,7 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
 
         //static int AddToProblemCluster(PROBLEM_CLUSTER_POINTER p_problem_cluster, PROBLEM_POINTER p_problem_to_add);       
 
-        static int Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, std::shared_ptr<Mori::ClCedrusLibani> p_hypotheses_tree, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance);        
-        // static int Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, ClProblem* p_parent_problem, PROBLEM_POINTER& po_problem_instance);        
+        static int Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, std::shared_ptr<Mori::ClCedrusLibani> p_hypotheses_tree, PREDICTOR_POINTER p_predictor, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance);               
         //static int DefaultIsSolvedFunction(ClOperator* p_operator_to_apply);
 
         int IsOperatorUsable(OPERATOR_POINTER p_operator);

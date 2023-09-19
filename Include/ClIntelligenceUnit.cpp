@@ -27,19 +27,12 @@ int ClIntelligenceUnit::Create(std::vector<OPERATOR_POINTER>& p_possible_operato
         return -4;
     }
 
-    result = ClProblemStore::Create(po_intelligence_unit_instance->m_problem_store);
+    result = ClPredictor::Create(po_intelligence_unit_instance->m_state_chain, po_intelligence_unit_instance->m_predictor);
     if(result != 1)
     {
-        std::cout << "Error running [ClProblemStore::Create] with result [" << result << "]" << std::endl;
-        return -5;        
-    }    
-
-    result = ClMovementLearner::Create(po_intelligence_unit_instance->m_movement_learner);
-    if(result != 1)
-    {
-        std::cout << "Error running [ClMovementLearner::Create] with result [" << result << "]" << std::endl;
-        return -6;        
-    }
+        std::cout << "[ClIntelligenceUnit::Create] Error running [ClPredictor::Create] with result [" << result << "]" << std::endl;
+        return -5;
+    } 
 
     po_intelligence_unit_instance->m_possible_operators = p_possible_operators;
     po_intelligence_unit_instance->m_solution_distance_function = p_solution_distance_function;
@@ -53,7 +46,7 @@ int ClIntelligenceUnit::Create(std::vector<OPERATOR_POINTER>& p_possible_operato
 
 bool ClIntelligenceUnit::IsInitialized()
 {
-    return (this->m_state_chain != nullptr && this->m_problem_store != nullptr && this->m_problem != nullptr);
+    return (this->m_state_chain != nullptr && this->m_predictor != nullptr && this->m_problem != nullptr && this->m_solution_distance_function != nullptr);
 }
 
 
@@ -75,32 +68,6 @@ int ClIntelligenceUnit::AddNewBlockToStateChain(STATE_POINTER& p_state)
         return -2;
     }
 
-    ClStateTransition::LEARNER_TRANSITION_INFORMATIONS movement_learner_transition_informations;
-
-    movement_learner_transition_informations.m_learner_instance = this->m_movement_learner;
-
-    result = this->m_movement_learner->AddTimestep(p_state->m_state_variables,movement_learner_transition_informations.m_learner_transition_data);
-    if(result != 1)
-    {
-        return -3;
-    }
-
-    result = ClState::Create(p_state->m_state_variables.size(), movement_learner_transition_informations.m_next_timestep_predictive_state);
-    if(result != 1)
-    {
-        return -4;
-    }
-
-
-    result = this->m_movement_learner->PredictNextStateVariables(movement_learner_transition_informations.m_next_timestep_predictive_state->m_state_variables,1);
-    if(result != 1)
-    {
-        return -5;
-    }
-
-    new_block.m_transition->m_learners_transitions.push_back(movement_learner_transition_informations);
-    new_block.m_predictive_next_state = movement_learner_transition_informations.m_next_timestep_predictive_state;
-
     this->m_state_chain->m_blocks.push_back(new_block);
 
     return 1;
@@ -108,7 +75,7 @@ int ClIntelligenceUnit::AddNewBlockToStateChain(STATE_POINTER& p_state)
 
 int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
 {
-    if(this->m_state_chain == nullptr || this->m_problem_store == nullptr)
+    if(this->m_state_chain == nullptr || this->m_predictor == nullptr)
     {
         std::cout << "[ClIntelligenceUnit::AddNewTimestep] Instance not fully initialized" << std::endl;        
         return -1;
@@ -122,12 +89,27 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
 
     int result = 0;
 
+    /*
+    *    Add a new block to our state chain
+    */
     result = this->AddNewBlockToStateChain(p_state);
     if(result != 1)
     {
         std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClIntelligenceUnit::AddNewBlockToStateChain] with result [" << result << "]" << std::endl;        
         return -3;
     }
+
+
+    /*
+    *     Tell our predictor we received a new block in our state chain, so it can process it
+    */
+    result = this->m_predictor->ProcessUpdatesFromStateChain();
+    if(result != 1)
+    {
+        std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClPredictor::ProcessUpdatesFromStateChain] with result [" << result << "]" << std::endl;        
+        return -4;
+    }
+
 
     /*
     *    Make sure ww have at least 1 state in our chain to create our problem
@@ -145,7 +127,7 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
         }        
 
 
-        result = ClProblem::Create(this->m_state_chain,this->m_possible_operators,this->m_solution_distance_function,new_hypotheses_tree_pointer,nullptr,this->m_problem);
+        result = ClProblem::Create(this->m_state_chain,this->m_possible_operators,this->m_solution_distance_function,new_hypotheses_tree_pointer,this->m_predictor,nullptr,this->m_problem);
         if(result != 1)
         {
             std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClProblem::Create] with result [" << result << "]" << std::endl;        
