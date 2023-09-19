@@ -30,6 +30,7 @@ std::string ClProblem::GetUID()
 
     if(this->m_chosen_operator != nullptr)
     {
+        result.append("-");
         result.append(this->m_chosen_operator->m_uid);
     }
 

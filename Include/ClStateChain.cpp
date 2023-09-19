@@ -84,9 +84,22 @@ STATE_CHAIN_POINTER ClStateChain::Clone()
     {
         STATE_CHAIN_BLOCK new_block;
         new_block.m_timestep = this->m_blocks[i].m_timestep;
-        new_block.m_state = this->m_blocks[i].m_state->Clone();
-        new_block.m_transition = this->m_blocks[i].m_transition->Clone();
-        new_block.m_predictive_next_state = this->m_blocks[i].m_predictive_next_state->Clone();
+        
+        if(this->m_blocks[i].m_state != nullptr)
+        {
+            new_block.m_state = this->m_blocks[i].m_state->Clone();
+        }
+
+        if(this->m_blocks[i].m_transition != nullptr)
+        {
+            new_block.m_transition = this->m_blocks[i].m_transition->Clone();
+        }
+
+        if(this->m_blocks[i].m_predictive_next_state != nullptr)
+        {
+            new_block.m_predictive_next_state = this->m_blocks[i].m_predictive_next_state->Clone();
+        }
+
         cloned_blocks.push_back(new_block);
     }
 
