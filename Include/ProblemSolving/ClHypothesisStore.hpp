@@ -7,9 +7,8 @@
 
 class ClHypothesisStore
 {
-    protected:
-        std::vector<ClHypothesis> m_hypotheses;
     public:
+        std::vector<ClHypothesis> m_hypotheses;
         ClHypothesisStore();
         ~ClHypothesisStore();
         static int Create(std::shared_ptr<ClHypothesisStore>& po_new_instance);

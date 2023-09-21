@@ -82,6 +82,13 @@ int ClProblem::IsEqualTo(ClProblem* p_source_problem)
 
 int ClProblem::HasHypothesisBeenTriedBefore(ClHypothesis& p_hypothesis)
 {
+    for(std::size_t i=0; i<this->m_global_hypothesis_store->m_hypotheses.size(); i++)
+    {
+        if(p_hypothesis.GetUID() == this->m_global_hypothesis_store->m_hypotheses[i].GetUID())
+        {
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -121,7 +128,7 @@ int ClProblem::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_propose
     }
 
 
-    std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: [" << usable_operators.size() << "] operator(s) detected, creating sub-problem for each one of them" << std::endl;
+    std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: [" << usable_operators.size() << "] operator(s) detected, creating a hypothesis for each one of them" << std::endl;
 
     for(std::size_t operator_id = 0; operator_id < usable_operators.size(); operator_id++)
     {
@@ -140,6 +147,7 @@ int ClProblem::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_propose
         */
         if(this->HasHypothesisBeenTriedBefore(new_hypothesis) == 1)
         {
+            std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: Hypothesis [" << new_hypothesis.GetUID() << "] has already been tried before, skipping it" << std::endl;
             continue;
         }
 
@@ -176,6 +184,7 @@ int ClProblem::ComputeHypothesesPredictiveState()
 {
     for(std::size_t i=0; i<this->m_hypotheses.size(); i++)
     {
+        std::cout << "[ClProblem::ComputeHypothesesPredictiveState][Problem " << this->GetUID() <<"]: Running operator [" << this->m_hypotheses[i].m_operator->m_uid << "]" << std::endl;
         int result = this->m_hypotheses[i].m_operator->Execute(this, this->m_hypotheses[i].m_predictive_state);
         if(result!=1)
         {
@@ -279,31 +288,31 @@ int ClProblem::IsOperatorUsable(OPERATOR_POINTER p_operator)
 
 
 
-// int ClProblem::GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_operators, std::vector<OPERATOR_POINTER>& po_usable_operators)
-// {
-//     if(p_possible_operators.size()==0)
-//     {
-//         return -1;
-//     }  
+int ClProblem::GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_operators, std::vector<OPERATOR_POINTER>& po_usable_operators)
+{
+    if(p_possible_operators.size()==0)
+    {
+        return -1;
+    }  
 
-//     po_usable_operators.clear();
+    po_usable_operators.clear();
 
-//     int result = 0;
-//     for(std::size_t i=0; i<p_possible_operators.size(); i++)
-//     {
-//         if(p_possible_operators[i] == nullptr)
-//         {
-//             return -2;
-//         }
+    int result = 0;
+    for(std::size_t i=0; i<p_possible_operators.size(); i++)
+    {
+        if(p_possible_operators[i] == nullptr)
+        {
+            return -2;
+        }
 
-//         result = this->IsOperatorUsable(p_possible_operators[i]);
-//         if(result==1)
-//         {
-//             po_usable_operators.push_back(p_possible_operators[i]);
-//         }
-//     } 
+        result = this->IsOperatorUsable(p_possible_operators[i]);
+        if(result==1)
+        {
+            po_usable_operators.push_back(p_possible_operators[i]);
+        }
+    } 
 
-//     return 1;
-// }
+    return 1;
+}
 
 

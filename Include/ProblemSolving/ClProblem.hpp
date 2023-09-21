@@ -39,16 +39,13 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
 
         std::vector<OPERATOR_POINTER> m_possible_operators;
    
-
-        virtual int SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_position_to_apply);        
-
         virtual int IsEqualTo(ClProblem* p_source_problem);
 
         std::string GetUID();
         
     public:
         ClProblem();
-        ~ClProblem();
+        virtual ~ClProblem();
 
         bool IsInitialized();
 
@@ -65,10 +62,8 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
         *    Used to simulate get_instance
         */
         virtual int IsEqualTo(PROBLEM_POINTER p_source_problem);
-        virtual int AmIBeingSolvedSomewhereElse(PROBLEM_POINTER& po_identical_problem);
-
         virtual int ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_proposed_operator, std::size_t p_number_of_steps_to_foresee);
-        virtual int IsSolved();
+
 };
 
 typedef std::shared_ptr<ClProblem> PROBLEM_POINTER;
