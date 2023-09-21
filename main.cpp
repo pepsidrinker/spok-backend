@@ -14,10 +14,10 @@ STATE_CHAIN_POINTER g_states_chain = nullptr;
 const std::size_t g_number_of_variables_per_state = 1;
 
 
-int operator_wait(void* p_problem_instance)
+int operator_wait(void* p_problem_instance, STATE_POINTER p_result_state)
 {
-    ClProblem* problem_instance = (ClProblem*)p_problem_instance;
-    problem_instance->m_hypothetical_solution_state = problem_instance->m_state_chain->m_blocks.back().m_state->Clone();
+    // ClProblem* problem_instance = (ClProblem*)p_problem_instance;
+    // problem_instance->m_hypothetical_solution_state = problem_instance->m_state_chain->m_blocks.back().m_state->Clone();
     return 1;
 }
 

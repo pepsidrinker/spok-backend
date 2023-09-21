@@ -117,21 +117,22 @@ int ClIntelligenceUnit::AddNewTimestep(STATE_POINTER& p_state)
     if(this->m_problem == nullptr)
     {
         /*
-        *    Create a hypotheses tree for our main problem
+        *    Create a global hypotheses store for our main problem & it's sub problem
         */
-        std::shared_ptr<Mori::ClCedrusLibani> new_hypotheses_tree_pointer = std::make_shared<Mori::ClCedrusLibani>(1024*1024*5, 1, 1024);
-        if(!new_hypotheses_tree_pointer->IsUsable())
+        HYPOTHESIS_STORE_POINTER global_hypothesis_store = nullptr;
+        result = ClHypothesisStore::Create(global_hypothesis_store);
+        if(result != 1)
         {
-            std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error instanciating new hypotheses tree running [ClCedrusLibani::ClCedrusLibani]" << std::endl;        
+            std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClHypothesisStore::Create] with result [" << result << "]" << std::endl;        
             return -4;
-        }        
+        }             
 
 
-        result = ClProblem::Create(this->m_state_chain,this->m_possible_operators,this->m_solution_distance_function,new_hypotheses_tree_pointer,this->m_predictor,nullptr,this->m_problem);
+        result = ClProblem::Create(this->m_state_chain,this->m_possible_operators,this->m_solution_distance_function,global_hypothesis_store,this->m_predictor,nullptr,this->m_problem);
         if(result != 1)
         {
             std::cout << "[ClIntelligenceUnit::AddNewTimestep] Error running [ClProblem::Create] with result [" << result << "]" << std::endl;        
-            return -4;
+            return -5;
         }
 
         std::cout << "[ClIntelligenceUnit::AddNewTimestep] Problem successfully created" << std::endl;

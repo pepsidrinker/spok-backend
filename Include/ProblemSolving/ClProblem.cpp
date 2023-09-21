@@ -4,12 +4,8 @@ ClProblem::ClProblem()
 {
     this->m_state_chain = nullptr;
     this->m_solution_distance_function = nullptr;
-    this->m_hypothetical_solution_state = nullptr;
     this->m_parent_problem = nullptr;
-    this->m_chosen_operator = nullptr;
     this->m_hypothetical_solution_distance = std::numeric_limits<float>::max();
-    this->m_hypotheses_tree = nullptr;
-    this->m_current_hypothesis_tree_node = 0;
 }
 
 ClProblem::~ClProblem()
@@ -29,114 +25,11 @@ std::string ClProblem::GetUID()
 
     std::string result = std::to_string(problematic_state_hash);    
 
-    if(this->m_chosen_operator != nullptr)
-    {
-        result.append("-");
-        result.append(this->m_chosen_operator->m_uid);
-    }
-
     return result;
 }
 
 
-float ClProblem::GetCurrentStateSolutionDistance()
-{
-    if(this->m_solution_distance_function == nullptr)
-    {
-        return -1.00;
-    }
-
-    STATE_POINTER& current_state = this->m_state_chain->m_blocks.back().m_state;
-    return this->m_solution_distance_function(this,current_state);
-}
-
-// int ClProblem::AddToProblemCluster(PROBLEM_CLUSTER_POINTER p_problem_cluster, PROBLEM_POINTER p_problem_to_add)
-// {
-//     if(p_problem_cluster == nullptr)
-//     {
-//         return -1;
-//     }    
-
-//     if(p_problem_cluster->IsInitialized()!=1)
-//     {
-//         return -1;
-//     }        
-
-//     if(p_problem_cluster->IsInitialized()!=1)
-//     {
-//         return -1;
-//     }
-
-//     std::unique_lock<std::shared_mutex> unique_block_guard(p_problem_cluster->m_mutex);
-//     p_problem_cluster->m_problems.push_back(p_problem_to_add);
-
-//     return 1;
-// }
-
-// int ClProblem::IsInitialized()
-// {
-//     if(this->m_problematic_state == nullptr)
-//     {
-//         return -3;
-//     }
-
-//     if(this->m_problematic_state->IsInitialized()!=1)
-//     {
-//         return -4;
-//     }
-
-//     if(this->m_hypothetical_solution_state == nullptr)
-//     {
-//         return -5;
-//     }
-
-//     if(this->m_hypothetical_solution_state->IsInitialized()!=1)
-//     {
-//         return -6;
-//     }
-
-//     // if(this->m_possible_operators.size()==0)
-//     // {
-//     //     return -7;
-//     // }
-
-//     for(std::size_t i=0; i<this->m_possible_operators.size(); i++)
-//     {
-//         if(this->m_possible_operators[i]->IsInitialized()!=1)
-//         {
-//             return -8;
-//         }
-//     }
-
-//     if(this->m_problem_cluster == nullptr)
-//     {
-//         return -9;
-//     }
-
-//     if(!this->m_problem_cluster->IsInitialized())
-//     {
-//         return -10;
-//     }
-
-
-//     for(std::size_t i=0; i<this->m_parameters.size(); i++)
-//     {
-//         if(this->m_parameters[i]->IsInitialized()!=1)
-//         {
-//             return -8;
-//         }
-//     }    
-    
-
-//     return 1;
-// }
-
-// int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, PROBLEM_STORE_POINTER p_previously_tried_hypotheses, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
-// {
-//     return ClProblem::Create(p_state_chain, p_possible_operators, p_solution_distance_function, p_previously_tried_hypotheses, p_parent_problem.get(), po_problem_instance);
-// }
-
-int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, std::shared_ptr<Mori::ClCedrusLibani> p_hypotheses_tree, PREDICTOR_POINTER p_predictor, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
+int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, HYPOTHESIS_STORE_POINTER p_hypotheses_store, PREDICTOR_POINTER p_predictor, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance)
 {
     if(p_state_chain == nullptr || p_state_chain->m_blocks.size() == 0 || p_state_chain->m_blocks.back().m_state == nullptr)
     {
@@ -151,7 +44,7 @@ int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_PO
         }
     }
 
-    if(p_hypotheses_tree == nullptr)
+    if(p_hypotheses_store == nullptr)
     {
         return -3;
     }
@@ -167,134 +60,15 @@ int ClProblem::Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_PO
     po_problem_instance->m_solution_distance_function = p_solution_distance_function;
     po_problem_instance->m_possible_operators = p_possible_operators;
     po_problem_instance->m_predictor = p_predictor;
+    po_problem_instance->m_global_hypothesis_store = p_hypotheses_store;
 
-    /*
-    *    Create a new hypothetical solution state
-    */
-    po_problem_instance->m_hypothetical_solution_state = p_state_chain->m_blocks.back().m_state->Clone();
-    
-
-
-    po_problem_instance->m_hypotheses_tree = p_hypotheses_tree;
-    po_problem_instance->m_current_hypothesis_tree_node = po_problem_instance->m_hypotheses_tree->GetFirstNode();
-
-    
     return 1;    
 }
 
 bool ClProblem::IsInitialized()
 {
-    return this->m_state_chain != nullptr && this->m_state_chain->m_blocks.size() > 0 && this->m_state_chain->m_blocks.back().m_state != nullptr && this->m_hypotheses_tree != nullptr && this->m_predictor != nullptr;;
+    return this->m_state_chain != nullptr && this->m_state_chain->m_blocks.size() > 0 && this->m_state_chain->m_blocks.back().m_state != nullptr && this->m_predictor != nullptr;;
 }
-
-
-// int ClProblem::DefaultIsSolvedFunction(ClOperator* p_operator_to_apply)
-// {
-//     /*
-//     *    Dude, do your job !
-//     */
-//     return -1;
-// }
-
-
-// int ClProblem::CreateAndCloneTo(PROBLEM_POINTER& po_target_problem)
-// {
-//     if(this->IsInitialized()!=1)
-//     {
-//         return -1;
-//     }
-    
-//     PROBLEM_POINTER new_problem = nullptr;
-//     int result = ClProblem::CreateProblem(this->m_problematic_state,this->m_possible_operators, this->m_parameters, this->m_is_solved_function_pointer, this->m_problem_cluster, this->m_parent_problem, new_problem);
-
-//     if(result != 1)
-//     {
-//         return -2;
-//     }
-
-//     po_target_problem = new_problem;
-
-//     return 1;
-// }
-
-// int ClProblem::NaiveCloneFrom(ClProblem* p_source_problem)
-// {
-//     int result = 0;
-
-//     this->m_problem_cluster = p_source_problem->m_problem_cluster;
-//     this->m_parent_problem = p_source_problem->m_parent_problem;
-
-//     result = ClWorkingMemory::CreateWorkingMemory(this->m_hypothetical_solution_state);
-//     if(result != 1)
-//     {
-//         return -4;
-//     }
-
-//     if(this->m_hypothetical_solution_state->CloneFrom(p_source_problem->m_hypothetical_solution_state)!=1)
-//     {
-//         return -5;
-//     }
-
-
-//     result = ClWorkingMemory::CreateWorkingMemory(this->m_problematic_state);
-//     if(result != 1)
-//     {
-//         return -6;
-//     }
-
-//     if(this->m_problematic_state->CloneFrom(p_source_problem->m_problematic_state)!=1)
-//     {
-//         return -7;
-//     }
-
-//     this->m_possible_operators.clear();
-
-//     for(std::size_t i=0; i<p_source_problem->m_possible_operators.size(); i++)
-//     {
-//         OPERATOR_POINTER new_operator = nullptr;
-//         if(ClOperator::CreateOperator(new_operator)!=1)
-//         {
-//             return -9;
-//         }
-
-//         if(new_operator->CloneFrom(p_source_problem->m_possible_operators[i])!=1)
-//         {
-//             return -10;
-//         }
-
-//         this->m_possible_operators.push_back(new_operator);
-
-//         if(p_source_problem->m_chosen_operator == p_source_problem->m_possible_operators[i])
-//         {
-//             this->m_chosen_operator = new_operator;
-//         }
-//     }
-
-
-//     /*
-//     *    Clone our parameters
-//     */
-//     this->m_parameters.clear();
-//     for(std::size_t i=0; i<p_source_problem->m_parameters.size(); i++)
-//     {
-//         VARIABLE_POINTER new_parameter = nullptr;
-//         if(ClVariable::CreateVariable(new_parameter)!=1)
-//         {
-//             return -11;
-//         }
-
-//         if(new_parameter->CloneFrom(p_source_problem->m_parameters[i])!=1)
-//         {
-//             return -12;
-//         }
-
-//         this->m_parameters.push_back(new_parameter);
-//     }    
-
-    
-
-//     return 1;    
-// }
 
 int ClProblem::IsEqualTo(PROBLEM_POINTER p_source_problem)
 {
@@ -306,6 +80,10 @@ int ClProblem::IsEqualTo(ClProblem* p_source_problem)
     return this->GetUID() == p_source_problem->GetUID();
 }
 
+int ClProblem::HasHypothesisBeenTriedBefore(ClHypothesis& p_hypothesis)
+{
+    return 0;
+}
 
 int ClProblem::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_proposed_operator, std::size_t p_number_of_steps_to_foresee)
 {
@@ -324,7 +102,7 @@ int ClProblem::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_propose
 
 
     /*
-    *    Try each operator to see if it gets us closer to the solution    
+    *    Create an hypothesis for every possible operator
     */
     std::vector<OPERATOR_POINTER> usable_operators;
     result = this->GetUsableOperators(this->m_possible_operators, usable_operators);
@@ -347,76 +125,86 @@ int ClProblem::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_propose
 
     for(std::size_t operator_id = 0; operator_id < usable_operators.size(); operator_id++)
     {
-        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: Trying operator [" << usable_operators[operator_id]->m_uid << "]" << std::endl;
-
-        /*
-        *    
-        */
-        PROBLEM_POINTER new_problem = nullptr;
-
-        result = ClProblem::Create(this->m_state_chain, this->m_possible_operators, this->m_solution_distance_function, this->m_hypotheses_tree, this->m_predictor, this->shared_from_this(), new_problem);
-        new_problem->m_chosen_operator = usable_operators[operator_id];
-
-        /*
-        *    Check if this problem is already being solved somewhere else
-        */
-        PROBLEM_POINTER identical_problem = nullptr;
-        result = new_problem->AmIBeingSolvedSomewhereElse(identical_problem);
-        if(result < 0)
+        ClHypothesis new_hypothesis;
+        new_hypothesis.m_operator = usable_operators[operator_id];
+        
+        result = ClState::Create(this->m_state_chain->m_blocks.back().m_state->m_state_variables.size(), new_hypothesis.m_predictive_state);
+        if(result!=1)
         {
-            std::cout << "    [ClProblem::SolveUsingSpecifiedOperator] : [AmIBeingSolvedSomewhereElse] returned an error of [" << result << "]" << std::endl;    
-            return -4;
+            std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"] Error running [ClState::Create] for new hypothesis with result [" << result << "]" << std::endl;
+            return -4;            
         }
-
-        if(result == 1)
+        
+        /*
+        *    Check if this hypothesis has already been tried before
+        */
+        if(this->HasHypothesisBeenTriedBefore(new_hypothesis) == 1)
         {
-            std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"]: Is already being computer by Problem [" << identical_problem->GetUID() << "], exiting" << std::endl;
             continue;
         }
 
-        if(new_problem->SolveUsingSpecifiedOperator(usable_operators[operator_id])==1)
-        {
-            return 1;
-        }
-    }        
+        this->m_hypotheses.push_back(new_hypothesis);
+    } 
+
+    if(this->m_hypotheses.size()==0)
+    {
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: No more possible hypothesis, dead-end" << std::endl;
+        return -5;            
+    }
+
+    result = this->ComputeHypothesesPredictiveState();
+    if(result!=1)
+    {
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"] Error running [ClProblem::ComputeHypothesesPredictiveState] with result [" << result << "]" << std::endl;
+        return -6;            
+    }
+
+    std::vector<std::size_t> hypotheses_indexes_that_solved_problem;
+    result = this->GetHypothesesIndexesThatSolvedProblem(hypotheses_indexes_that_solved_problem);       
+    if(hypotheses_indexes_that_solved_problem.size() > 0)
+    {
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: [" << hypotheses_indexes_that_solved_problem.size() << "] some hypothesis(es) solved the problem" << std::endl;
+        return 1;
+    }
  
+    std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_parent_problem <<"]: Tryed all hypotheses for this timestep, nothing worked : dead-end" << std::endl;
+    return 0;
+}
 
 
-    std::cout << "[ClProblem::ProposeSolution][Problem " << this->m_parent_problem <<"]: Tryed all operator(s), nothing worked : dead-end" << std::endl;
-    return -5;
+int ClProblem::ComputeHypothesesPredictiveState()
+{
+    for(std::size_t i=0; i<this->m_hypotheses.size(); i++)
+    {
+        int result = this->m_hypotheses[i].m_operator->Execute(this, this->m_hypotheses[i].m_predictive_state);
+        if(result!=1)
+        {
+            std::cout << "[ClProblem::ComputeHypothesesPredictiveState][Problem " << this->GetUID() <<"] Error running [ClOperator::Execute] with result [" << result << "]" << std::endl;
+            return -1;            
+        }
+    }
+
 
     return 1;
 }
 
-int ClProblem::SolveUsingSpecifiedOperator(OPERATOR_POINTER p_possible_operator_position_to_apply)
+
+int ClProblem::GetHypothesesIndexesThatSolvedProblem(std::vector<std::size_t>& po_solved_hypotheses_indexes)
 {
-    int result = 0;
-
-    std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"] will now try to apply 1 single operator [" << p_possible_operator_position_to_apply->m_uid << "]" << std::endl;
-
-    result = this->ApplyOperator(this->m_chosen_operator);
-    if(result!=1)
+    po_solved_hypotheses_indexes.clear();
+    for(std::size_t i=0; i<this->m_hypotheses.size(); i++)
     {
-        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"]: Could not apply the only available operator, nothing worked : dead-end" << std::endl;
-        return -3;                 
+        if(this->m_solution_distance_function(this,this->m_hypotheses[i].m_predictive_state) == 0.00)
+        {
+            po_solved_hypotheses_indexes.push_back(i);
+        }
     }
 
-    /*
-    *    Check if the operator give the result we want
-    */
-    result = this->IsSolved();
-    if(result==1)
-    {
-        /*
-        *    Congrats, problem solved :)
-        */
-        std::cout << "    [ClProblem::SolveUsingSpecifiedOperator][Problem " << this->GetUID() <<"]: Sucessfully solved problem" << std::endl;        
-        return 1;          
-    }
 
-    std::cout << "    [ClProblem::SolveUsingSpecifiedOperator] : [ClProblem::IsSolved] returned [" << result << "]" << std::endl;
-    return -6;
+    return 1;
 }
+
+
 
 
 
@@ -491,82 +279,31 @@ int ClProblem::IsOperatorUsable(OPERATOR_POINTER p_operator)
 
 
 
-int ClProblem::GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_operators, std::vector<OPERATOR_POINTER>& po_usable_operators)
-{
-    if(p_possible_operators.size()==0)
-    {
-        return -1;
-    }  
+// int ClProblem::GetUsableOperators(std::vector<OPERATOR_POINTER>& p_possible_operators, std::vector<OPERATOR_POINTER>& po_usable_operators)
+// {
+//     if(p_possible_operators.size()==0)
+//     {
+//         return -1;
+//     }  
 
-    po_usable_operators.clear();
+//     po_usable_operators.clear();
 
-    int result = 0;
-    for(std::size_t i=0; i<p_possible_operators.size(); i++)
-    {
-        if(p_possible_operators[i] == nullptr)
-        {
-            return -2;
-        }
+//     int result = 0;
+//     for(std::size_t i=0; i<p_possible_operators.size(); i++)
+//     {
+//         if(p_possible_operators[i] == nullptr)
+//         {
+//             return -2;
+//         }
 
-        result = this->IsOperatorUsable(p_possible_operators[i]);
-        if(result==1)
-        {
-            po_usable_operators.push_back(p_possible_operators[i]);
-        }
-    } 
+//         result = this->IsOperatorUsable(p_possible_operators[i]);
+//         if(result==1)
+//         {
+//             po_usable_operators.push_back(p_possible_operators[i]);
+//         }
+//     } 
 
-    return 1;
-}
-
-
-
-int ClProblem::ApplyOperator(OPERATOR_POINTER p_operator)
-{
-    if(p_operator == nullptr)
-    {
-        return -1;
-    }
-
-    std::cout << "[ClProblem::ApplyOperator] Applying operator [" << p_operator->m_uid << "] on problem [" << this->GetUID() << "]" << std::endl;
-
-    int result = p_operator->Execute(this);
-    if(result != 1)
-    {
-        std::cout << "[ClProblem::ApplyOperator] Apply function returned [" << result << "]" << std::endl;
-        return -2;
-    }
-
-    return 1;
-}
-
-int ClProblem::IsSolved()
-{
-    if(this->m_hypothetical_solution_state == nullptr)
-    {
-        return -1;
-    }
-
-    return this->m_solution_distance_function(this,this->m_hypothetical_solution_state) <=  0.05;
-}
+//     return 1;
+// }
 
 
-
-int ClProblem::AmIBeingSolvedSomewhereElse(PROBLEM_POINTER& po_identical_problem)
-{
-    // for(std::size_t i=0; i<this->m_previously_tried_hypotheses->m_problems.size(); i++)
-    // {
-    //     if(this->m_previously_tried_hypotheses->m_problems.at(i).get() == this)
-    //     {
-    //         continue;
-    //     } 
-
-    //     int result = this->IsEqualTo(this->m_previously_tried_hypotheses->m_problems.at(i));
-    //     if(result == 1)
-    //     {
-    //         po_identical_problem = this->m_previously_tried_hypotheses->m_problems.at(i);
-    //         return 1;
-    //     }
-    // }
-
-    return 0;
-}

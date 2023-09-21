@@ -10,10 +10,7 @@
 
 #include "ProblemSolving/ClOperator.hpp"
 #include "ProblemSolving/ClProblem.hpp"
-
-
-#include <mori/ClCedrusLibani.hpp>
-#include <mori/ClCedrusLibaniTopologicIteratorDepthFirst.hpp>
+#include "ProblemSolving/ClHypothesisStore.hpp" 
 
 
 #include <memory>

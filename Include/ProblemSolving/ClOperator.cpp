@@ -26,14 +26,14 @@ int ClOperator::Create(EXECUTE_FUNCTION_POINTER p_execute_function,  std::shared
 }
 
 
-int ClOperator::Execute(void* p_problem_instance)
+int ClOperator::Execute(void* p_problem_instance, STATE_POINTER p_result_state)
 {
     if(this->m_execute_function == nullptr)
     {
         return 0;
     }
 
-    return this->m_execute_function(p_problem_instance);
+    return this->m_execute_function(p_problem_instance, p_result_state);
 }
 
 bool ClOperator::IsEqualTo(const ClOperator& p_operator)
