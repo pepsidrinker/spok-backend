@@ -14,12 +14,33 @@ STATE_CHAIN_POINTER g_states_chain = nullptr;
 const std::size_t g_number_of_variables_per_state = 1;
 
 
-int operator_wait(void* p_problem_instance, STATE_POINTER p_result_state)
+int operator_wait(void* p_problem_instance, STATE_POINTER& p_result_state)
 {
     std::cout << "Executing operator [operator_wait]" << std::endl;
 
     ClProblem* problem_instance = (ClProblem*)p_problem_instance;
     p_result_state->m_state_variables = problem_instance->m_state_chain->m_blocks.back().m_state->m_state_variables;
+    return 1;
+}
+
+
+int operator_turn_right(void* p_problem_instance, STATE_POINTER& p_result_state)
+{
+    std::cout << "Executing operator [operator_turn_right]" << std::endl;
+
+    ClProblem* problem_instance = (ClProblem*)p_problem_instance;
+    p_result_state->m_state_variables = problem_instance->m_state_chain->m_blocks.back().m_state->m_state_variables;
+    p_result_state->m_state_variables[p_result_state->m_state_variables.size()-4] += 1.0;
+    return 1;
+}
+
+int operator_go_down(void* p_problem_instance, STATE_POINTER& p_result_state)
+{
+    std::cout << "Executing operator [operator_go_down]" << std::endl;
+
+    ClProblem* problem_instance = (ClProblem*)p_problem_instance;
+    p_result_state->m_state_variables = problem_instance->m_state_chain->m_blocks.back().m_state->m_state_variables;
+    p_result_state->m_state_variables[p_result_state->m_state_variables.size()-3] += 1.0;
     return 1;
 }
 
@@ -64,6 +85,8 @@ int main()
     /*
     *    Prepare all we need to solve our main problem
     */
+    std::vector<OPERATOR_POINTER> possible_operators;
+
     OPERATOR_POINTER operator_wait_pointer = nullptr;
     result = ClOperator::Create(operator_wait, operator_wait_pointer);
     if(result != 1)
@@ -71,9 +94,33 @@ int main()
         std::cout << "Error running [ClOperator::Create] with result [" << result << "]" << std::endl;
         return -2;        
     }
-
-    std::vector<OPERATOR_POINTER> possible_operators;
     possible_operators.push_back(operator_wait_pointer);
+
+    OPERATOR_POINTER operator_turn_right_pointer = nullptr;
+    result = ClOperator::Create(operator_turn_right, operator_turn_right_pointer);
+    if(result != 1)
+    {
+        std::cout << "Error running [ClOperator::Create] with result [" << result << "]" << std::endl;
+        return -2;        
+    }
+    possible_operators.push_back(operator_turn_right_pointer);
+
+
+    OPERATOR_POINTER operator_go_downpointer = nullptr;
+    result = ClOperator::Create(operator_go_down, operator_go_downpointer);
+    if(result != 1)
+    {
+        std::cout << "Error running [ClOperator::Create] with result [" << result << "]" << std::endl;
+        return -2;        
+    }
+    possible_operators.push_back(operator_go_downpointer);
+
+
+
+
+
+
+
 
 
     INTELLIGENCE_UNIT_POINTER g_intelligence_unit = nullptr;
@@ -118,6 +165,8 @@ int main()
             std::cout << "Error running [ClIntelligenceUnit::ProposeSolution] with result [" << result << "]" << std::endl;
             return -5;                    
         }
+
+        std::cout << "Proposed operator [" << proposed_operator->m_uid << "]" << std::endl;
 
       
 

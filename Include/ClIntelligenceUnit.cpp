@@ -150,8 +150,7 @@ int ClIntelligenceUnit::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& p
         return -1;
     }
 
-    OPERATOR_POINTER proposed_operator = nullptr;
-    int result = this->m_problem->ProposeOperatorToGetCloserToSolution(proposed_operator, p_number_of_steps_to_foresee);
+    int result = this->m_problem->ProposeOperatorToGetCloserToSolution(po_proposed_operator, p_number_of_steps_to_foresee);
     if(result != 1)
     {
         std::cout << "[ClIntelligenceUnit::ProposeSolution] Error running [ClProblem::ProposeSolution] with result [" << result << "]" << std::endl;        

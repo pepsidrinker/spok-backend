@@ -167,11 +167,12 @@ int ClProblem::ProposeOperatorToGetCloserToSolution(OPERATOR_POINTER& po_propose
         return -6;            
     }
 
-    std::vector<std::size_t> hypotheses_indexes_that_solved_problem;
-    result = this->GetHypothesesIndexesThatSolvedProblem(hypotheses_indexes_that_solved_problem);       
-    if(hypotheses_indexes_that_solved_problem.size() > 0)
+    std::vector<std::size_t> hypotheses_indexes_that_are_closer_to_solution;
+    result = this->GetHypothesesIndexesThatAreCloserToSolution(hypotheses_indexes_that_are_closer_to_solution);       
+    if(hypotheses_indexes_that_are_closer_to_solution.size() > 0)
     {
-        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: [" << hypotheses_indexes_that_solved_problem.size() << "] some hypothesis(es) solved the problem" << std::endl;
+        std::cout << "[ClProblem::ProposeSolution][Problem " << this->GetUID() <<"]: [" << hypotheses_indexes_that_are_closer_to_solution.size() << "] hypothesis(es) seems to be closer to solution than current state" << std::endl;
+        po_proposed_operator = this->m_hypotheses[hypotheses_indexes_that_are_closer_to_solution[0]].m_operator;
         return 1;
     }
  
@@ -198,17 +199,29 @@ int ClProblem::ComputeHypothesesPredictiveState()
 }
 
 
-int ClProblem::GetHypothesesIndexesThatSolvedProblem(std::vector<std::size_t>& po_solved_hypotheses_indexes)
+int ClProblem::GetHypothesesIndexesThatAreCloserToSolution(std::vector<std::size_t>& po_solved_hypotheses_indexes)
 {
+    float current_state_distance_to_solution = this->m_solution_distance_function(this,this->m_state_chain->m_blocks.back().m_state);
+
     po_solved_hypotheses_indexes.clear();
     for(std::size_t i=0; i<this->m_hypotheses.size(); i++)
     {
-        if(this->m_solution_distance_function(this,this->m_hypotheses[i].m_predictive_state) == 0.00)
+        this->m_hypotheses[i].m_predictive_state_solution_distance = this->m_solution_distance_function(this,this->m_hypotheses[i].m_predictive_state);
+
+        if(this->m_hypotheses[i].m_predictive_state_solution_distance < current_state_distance_to_solution)
         {
             po_solved_hypotheses_indexes.push_back(i);
         }
     }
 
+    /*
+    *    Order hypotheses by the score on the solution distance function
+    */    
+    std::sort(po_solved_hypotheses_indexes.begin(), po_solved_hypotheses_indexes.end(),
+              [this](float a, float b)
+              {
+                  return this->m_hypotheses[a].m_predictive_state_solution_distance > this->m_hypotheses[b].m_predictive_state_solution_distance;
+              });
 
     return 1;
 }

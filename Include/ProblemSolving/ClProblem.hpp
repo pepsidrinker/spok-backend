@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include <xxhash.h>
 
@@ -51,7 +52,7 @@ class ClProblem : public std::enable_shared_from_this<ClProblem>
 
         int HasHypothesisBeenTriedBefore(ClHypothesis& p_hypothesis);
         int ComputeHypothesesPredictiveState();
-        int GetHypothesesIndexesThatSolvedProblem(std::vector<std::size_t>& po_solved_hypotheses_indexes);
+        int GetHypothesesIndexesThatAreCloserToSolution(std::vector<std::size_t>& po_solved_hypotheses_indexes);
 
         static int Create(STATE_CHAIN_POINTER p_state_chain, std::vector<OPERATOR_POINTER>& p_possible_operators, PROBLEM_SOLUTION_DISTANCE_FUNCTION_POINTER p_solution_distance_function, HYPOTHESIS_STORE_POINTER p_hypotheses_store, PREDICTOR_POINTER p_predictor, PROBLEM_POINTER p_parent_problem, PROBLEM_POINTER& po_problem_instance);               
     
